@@ -15,12 +15,13 @@ extension PlistObject: PlistStringConvertible {
         var lastIsa: String?
         for node in self {
             result += node.string(depth + 1)
+            result += ";"
             result += isNewLineNeeded ? "\n" : " "
         }
         if isNewLineNeeded && depth > 0 {
             result += tabs(depth)
         }
-        result += depth == 0 ? "}" : "};"
+        result += "}"
         return result
     }
 }
@@ -52,8 +53,10 @@ extension Value: PlistStringConvertible {
             }
         case let values as [Value]:
             result += "(\n"
-            result += values.map { "\(tabs(depth + 1))\($0.string(depth + 1))" }.joined(separator: ",\n")
-            result += "\n\(tabs(depth)));"
+            result += values.map { "\(tabs(depth + 1))\($0.string(depth + 1))," }.joined(separator: "\n")
+            result += "\n"
+            result += tabs(depth)
+            result += ")"
         default:
             fatalError()
         }
