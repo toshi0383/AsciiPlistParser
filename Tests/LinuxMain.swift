@@ -1,6 +1,6 @@
 import XCTest
-@testable import ascii_plist_parserTests
+@testable import AsciiPlistParserTests
 
 XCTMain([
-    testCase(ascii_plist_parserTests.allTests),
+    testCase(AsciiPlistParserTests.allTests),
 ])
