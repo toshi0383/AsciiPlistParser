@@ -10,7 +10,15 @@ public struct Object {
     public func asDictionary() -> [String: Any] {
         switch value.value {
         case let v as [Object]:
-            return [key.id: v.map { $0.asDictionary() }]
+            return [key.id: v.reduce([String: Any]()) { (acc, v) in
+                var result = acc
+                let d = v.asDictionary()
+                for (k, v) in d {
+                    result[k] = v
+                }
+                return result
+                }
+            ]
         case let v as [Value]:
             return [key.id: v.map { $0.value }]
         default:

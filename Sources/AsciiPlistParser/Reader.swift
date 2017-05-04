@@ -2,7 +2,7 @@ import Foundation
 
 public class Reader {
     private let path: String
-    private var objects: [Object] = []
+    public var objects: [Object] = []
     public var dictionary: [String: Any] {
         var dict: [String: Any] = [:]
         for o in objects {
@@ -47,6 +47,7 @@ public class Reader {
 
     private func getArray() -> [Value]? {
         var result: [Value] = []
+        var characters: [Character] = []
         while let next = iterator.next() {
             switch next {
             case "(":
@@ -54,7 +55,20 @@ public class Reader {
                 if String(iterator.prefix(1)) == ")" {
                     return []
                 }
-                result.append(Value(value: getBefore(" "), annotation: getAnnotation()))
+            case ("a"..."z"), ("A"..."Z"), ("0"..."9"), "_":
+                characters.append(next)
+            case ",":
+                if characters.isEmpty {
+                    continue
+                }
+                result.append(Value(value: String(characters), annotation: getAnnotation()))
+                characters = []
+            case " ":
+                if characters.isEmpty {
+                    continue
+                }
+                result.append(Value(value: String(characters), annotation: getAnnotation()))
+                characters = []
             case ")":
                 if String(iterator.prefix(1)) == ";" {
                     eat(1)

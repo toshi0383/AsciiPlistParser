@@ -6,8 +6,8 @@ class AsciiPlistParserTests: XCTestCase {
         let path = Bundle(for: AsciiPlistParserTests.self).path(forResource: "test.pbxproj", ofType: nil)!
         let parser = try! Reader(path: path)
         try! parser.parse()
-        let objects = parser.dictionary
-        print(objects["objects"]!)
+        let objects = parser.objects
+        print(objects[3].asDictionary())
     }
 
     static var allTests = [
