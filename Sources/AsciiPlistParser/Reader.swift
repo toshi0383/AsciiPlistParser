@@ -88,11 +88,13 @@ public class Reader {
                     case ";":
                         return result
                     default:
-                        continue
+                        break
                 }
             default:
-                continue
+                break
             }
+            eatBeginEndAnnotation()
+            eatWhiteSpace()
         }
         return result
     }
@@ -166,7 +168,7 @@ public class Reader {
 
     private func eatWhiteSpace() {
         while [" ", "\t", "\n"].contains(String(iterator.prefix(1))) {
-            _ = iterator.next()
+            eat(1)
         }
     }
 
