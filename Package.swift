@@ -8,7 +8,10 @@ var isSwiftPackagerManagerTest: Bool {
 }
 
 let package = Package(
-    name: "AsciiPlistParser"
+    name: "AsciiPlistParser",
+    dependencies: [
+        .Package(url: "https://github.com/krzysztofzablocki/Sourcery.git", majorVersion: 0, minor: 6),
+    ],
 //    dependencies: {
 //        var deps: [Package.Dependency] = []
 //        if isSwiftPackagerManagerTest {
@@ -20,4 +23,5 @@ let package = Package(
 //        }
 //        return deps
 //    }()
+    exclude: ["Resources/SourceryTemplates"]
 )

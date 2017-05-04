@@ -2,7 +2,7 @@ import Foundation
 
 public class Reader {
     private let path: String
-    public var objects: PlistDictionary = [:]
+    public var objects: PlistObject = [:]
     private var iterator: IndexingIterator<[Character]>!
     private let scanner = Scanner()
     public init(path: String) throws {
@@ -18,7 +18,7 @@ public class Reader {
                 _ = iterator.next()
             }
         }
-        self.objects = _parse() as! PlistDictionary
+        self.objects = _parse() as! PlistObject
     }
 
     private func _parse() -> Any {
@@ -28,7 +28,7 @@ public class Reader {
         let type = scanner.scan(string: prefix)
         switch type {
         case .objects:
-            return getObjects()!
+            return getObject()!
         case .array:
             return getArray()!
         case .string:
@@ -74,10 +74,10 @@ public class Reader {
         return nil
     }
 
-    private func getObjects() -> PlistDictionary? {
+    private func getObject() -> PlistObject? {
         eatBeginEndAnnotation()
         eatWhiteSpace()
-        var result: PlistDictionary = [:]
+        var result: PlistObject = [:]
         var key: KeyRef!
         while let next = iterator.next() {
             if next == "}" && String(iterator.prefix(4)) == "\n" {
@@ -100,7 +100,7 @@ public class Reader {
                 }
             case "=" where key != nil:
                 let value = Value(value: _parse(), annotation: getAnnotation())
-                result[key.id] = Object(key: key, value: value)
+                result[key.id] = Node(key: key, value: value)
                 key = nil
                 continue
             case "}":

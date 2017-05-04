@@ -1,33 +1,38 @@
 import Foundation
 
-public struct PlistDictionary {
+public struct PlistObject {
     var keys = [String]()
-    var dict = [String: Object]()
+    var dict = [String: Node]()
 
     public var count: Int {
         return self.keys.count
     }
 
-    public subscript(key: String) -> Object? {
+    public subscript(key: String) -> Any? {
         get {
-            return self.dict[key]
+            return self.dict[key]?.value.value
         }
         set(newValue) {
             if newValue == nil {
-                self.dict.removeValue(forKey:key)
+                self.dict.removeValue(forKey: key)
                 self.keys = self.keys.filter {$0 != key}
             } else {
-                let oldValue = self.dict.updateValue(newValue!, forKey: key)
-                if oldValue == nil {
+                if self[key] == nil {
+                    guard let o = newValue as? Node else {
+                        fatalError("newValue must be a Node when adding a new entry.")
+                    }
                     self.keys.append(key)
+                    self.dict[key] = o
+                } else {
+                    self.dict[key]!.value.value = newValue!
                 }
             }
         }
     }
 }
 
-extension PlistDictionary: Sequence {
-    public func makeIterator() -> AnyIterator<Object> {
+extension PlistObject: Sequence {
+    public func makeIterator() -> AnyIterator<Node> {
         var counter = 0
         return AnyIterator {
             guard counter<self.keys.count else {
@@ -40,7 +45,7 @@ extension PlistDictionary: Sequence {
     }
 }
 
-extension PlistDictionary: CustomStringConvertible {
+extension PlistObject: CustomStringConvertible {
     public var description: String {
         let isString = type(of: self.keys[0]) == String.self
         var result = "["
@@ -54,8 +59,8 @@ extension PlistDictionary: CustomStringConvertible {
     }
 }
 
-extension PlistDictionary: ExpressibleByDictionaryLiteral {
-    public init(dictionaryLiteral elements: (String, Object)...) {
+extension PlistObject: ExpressibleByDictionaryLiteral {
+    public init(dictionaryLiteral elements: (String, Node)...) {
         self.init()
         for (key, value) in elements {
             self[key] = value
