@@ -3,6 +3,7 @@ import Foundation
 public struct PlistObject {
     var keys = [String]()
     var dict = [String: Node]()
+    public var isNewLineNeeded: Bool = true
 
     public var count: Int {
         return self.keys.count

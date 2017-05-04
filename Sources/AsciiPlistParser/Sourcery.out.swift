@@ -36,6 +36,7 @@ extension Node: Equatable {}
 public func == (lhs: Node, rhs: Node) -> Bool {
     guard lhs.key == rhs.key else { return false }
     guard lhs.value == rhs.value else { return false }
+    guard lhs.isNewLineNeeded == rhs.isNewLineNeeded else { return false }
     return true
 }
 

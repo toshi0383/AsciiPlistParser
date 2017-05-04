@@ -43,13 +43,11 @@ public class Reader {
         var characters: [Character] = []
         while let next = iterator.next() {
             switch next {
-            case "(":
+            case "(" where characters.isEmpty:
                 eatWhiteSpace()
                 if String(iterator.prefix(1)) == ")" {
                     return []
                 }
-            case ("a"..."z"), ("A"..."Z"), ("0"..."9"), "_":
-                characters.append(next)
             case ",":
                 if characters.isEmpty {
                     continue
@@ -66,9 +64,14 @@ public class Reader {
                 if String(iterator.prefix(1)) == ";" {
                     eat(1)
                     return result
+                } else {
+                    characters.append(next)
                 }
-            default:
+            case "\n":
+                eatWhiteSpace()
                 continue
+            default:
+                characters.append(next)
             }
         }
         return nil
@@ -79,6 +82,7 @@ public class Reader {
         eatWhiteSpace()
         var result: PlistObject = [:]
         var key: KeyRef!
+        var isNewLineNeeded = false
         while let next = iterator.next() {
             if next == "}" && String(iterator.prefix(4)) == "\n" {
                 break
@@ -87,6 +91,10 @@ public class Reader {
             eatWhiteSpace()
             switch next {
             case "{" where key == nil:
+                if String(iterator.prefix(1)) == "\n" {
+                    isNewLineNeeded = true
+                    result.isNewLineNeeded = true
+                }
                 eatWhiteSpace()
                 if String(iterator.prefix(1)) == "}" {
                     eat(1)
@@ -100,8 +108,9 @@ public class Reader {
                 }
             case "=" where key != nil:
                 let value = Value(value: _parse(), annotation: getAnnotation())
-                result[key.id] = Node(key: key, value: value)
+                result[key.id] = Node(key: key, value: value, isNewLineNeeded: isNewLineNeeded)
                 key = nil
+                isNewLineNeeded = false
                 continue
             case "}":
                 switch String(iterator.prefix(1)) {
@@ -187,7 +196,7 @@ public class Reader {
     }
 
     private func eatWhiteSpace() {
-        while [" ", "\t", "\n"].contains(String(iterator.prefix(1))) {
+        while [" ", "\t",].contains(String(iterator.prefix(1))) {
             eat(1)
         }
     }

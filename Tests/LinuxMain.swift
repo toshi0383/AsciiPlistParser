@@ -6,6 +6,7 @@ import XCTest
 extension AsciiPlistParserTests {
   static var allTests: [(String, (AsciiPlistParserTests) -> () throws -> Void)] = [
     ("testReader", testReader),
+    ("testPlistStringConvertible", testPlistStringConvertible),
   ]
 }
 

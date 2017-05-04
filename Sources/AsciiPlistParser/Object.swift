@@ -7,9 +7,11 @@ enum Const {
 public struct Node {
     public var key: KeyRef
     public var value: Value
-    public init(key: KeyRef, value: Value) {
+    public var isNewLineNeeded = true
+    public init(key: KeyRef, value: Value, isNewLineNeeded: Bool) {
         self.key = key
         self.value = value
+        self.isNewLineNeeded = isNewLineNeeded
     }
 }
 
@@ -55,7 +57,7 @@ func equals(_ l: Any?, _ r: Any?) -> Bool {
         return false
     }
     switch (l, r) {
-    case (let l as [Node], let r as [Node]):
+    case (let l as [Value], let r as [Value]):
         return l == r
     case (let l as Node, let r as Node):
         return l == r
