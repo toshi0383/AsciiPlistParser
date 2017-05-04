@@ -8,16 +8,16 @@ var isSwiftPackagerManagerTest: Bool {
 }
 
 let package = Package(
-    name: "AsciiPlistParser",
-    dependencies: {
-        var deps: [Package.Dependency] = []
-        if isSwiftPackagerManagerTest {
-            deps += [
-                .Package(url: "https://github.com/kylef/PathKit.git", majorVersion: 0, minor: 8),
-                .Package(url: "https://github.com/Quick/Quick.git", majorVersion: 1, minor: 1),
-                .Package(url: "https://github.com/Quick/Nimble.git", majorVersion: 6, minor: 1),
-            ]
-        }
-        return deps
-    }()
+    name: "AsciiPlistParser"
+//    dependencies: {
+//        var deps: [Package.Dependency] = []
+//        if isSwiftPackagerManagerTest {
+//            deps += [
+//                .Package(url: "https://github.com/kylef/PathKit.git", majorVersion: 0, minor: 8),
+//                .Package(url: "https://github.com/Quick/Quick.git", majorVersion: 1, minor: 1),
+//                .Package(url: "https://github.com/Quick/Nimble.git", majorVersion: 6, minor: 1),
+//            ]
+//        }
+//        return deps
+//    }()
 )

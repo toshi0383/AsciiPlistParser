@@ -2,14 +2,7 @@ import Foundation
 
 public class Reader {
     private let path: String
-    public var objects: [Object] = []
-    public var dictionary: [String: Any] {
-        var dict: [String: Any] = [:]
-        for o in objects {
-            dict[o.key.id] = o.asDictionary()
-        }
-        return dict
-    }
+    public var objects: PlistDictionary = [:]
     private var iterator: IndexingIterator<[Character]>!
     private let scanner = Scanner()
     public init(path: String) throws {
@@ -25,7 +18,7 @@ public class Reader {
                 _ = iterator.next()
             }
         }
-        self.objects = _parse() as! [Object]
+        self.objects = _parse() as! PlistDictionary
     }
 
     private func _parse() -> Any {
@@ -81,10 +74,10 @@ public class Reader {
         return nil
     }
 
-    private func getObjects() -> [Object]? {
+    private func getObjects() -> PlistDictionary? {
         eatBeginEndAnnotation()
         eatWhiteSpace()
-        var result: [Object] = []
+        var result: PlistDictionary = [:]
         var key: KeyRef!
         while let next = iterator.next() {
             if next == "}" && String(iterator.prefix(4)) == "\n" {
@@ -97,7 +90,7 @@ public class Reader {
                 eatWhiteSpace()
                 if String(iterator.prefix(1)) == "}" {
                     eat(1)
-                    return []
+                    return [:]
                 }
                 continue
             case ("a"..."z"), ("A"..."Z"), ("0"..."9"), "_":
@@ -107,7 +100,7 @@ public class Reader {
                 }
             case "=" where key != nil:
                 let value = Value(value: _parse(), annotation: getAnnotation())
-                result.append(Object(key: key, value: value))
+                result[key.id] = Object(key: key, value: value)
                 key = nil
                 continue
             case "}":

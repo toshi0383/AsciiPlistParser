@@ -1,14 +1,14 @@
 import Foundation
 
-public struct OrderedDictionary {
-    var keys = [KeyRef]()
-    var dict = [KeyRef: Object]()
+public struct PlistDictionary {
+    var keys = [String]()
+    var dict = [String: Object]()
 
     public var count: Int {
         return self.keys.count
     }
 
-    public subscript(key: KeyRef) -> Object? {
+    public subscript(key: String) -> Object? {
         get {
             return self.dict[key]
         }
@@ -26,7 +26,7 @@ public struct OrderedDictionary {
     }
 }
 
-extension OrderedDictionary: Sequence {
+extension PlistDictionary: Sequence {
     public func makeIterator() -> AnyIterator<Object> {
         var counter = 0
         return AnyIterator {
@@ -40,7 +40,7 @@ extension OrderedDictionary: Sequence {
     }
 }
 
-extension OrderedDictionary: CustomStringConvertible {
+extension PlistDictionary: CustomStringConvertible {
     public var description: String {
         let isString = type(of: self.keys[0]) == String.self
         var result = "["
@@ -54,8 +54,8 @@ extension OrderedDictionary: CustomStringConvertible {
     }
 }
 
-extension OrderedDictionary: ExpressibleByDictionaryLiteral {
-    public init(dictionaryLiteral elements: (KeyRef, Object)...) {
+extension PlistDictionary: ExpressibleByDictionaryLiteral {
+    public init(dictionaryLiteral elements: (String, Object)...) {
         self.init()
         for (key, value) in elements {
             self[key] = value
