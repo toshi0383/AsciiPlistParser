@@ -45,13 +45,26 @@ public class Reader {
         }
     }
 
-    private func getArray() -> [String]? {
-        eatWhiteSpace()
-        guard String(iterator.prefix(1)) == "(" else {
-            return nil
+    private func getArray() -> [Value]? {
+        var result: [Value] = []
+        while let next = iterator.next() {
+            switch next {
+            case "(":
+                eatWhiteSpace()
+                if String(iterator.prefix(1)) == ")" {
+                    return []
+                }
+                result.append(Value(value: getBefore(" "), annotation: getAnnotation()))
+            case ")":
+                if String(iterator.prefix(1)) == ";" {
+                    eat(1)
+                    return result
+                }
+            default:
+                continue
+            }
         }
-        _ = iterator.next()
-        return getBefore(");").components(separatedBy: ",")
+        return nil
     }
 
     private func getObjects() -> [Object]? {

@@ -11,6 +11,8 @@ public struct Object {
         switch value.value {
         case let v as [Object]:
             return [key.id: v.map { $0.asDictionary() }]
+        case let v as [Value]:
+            return [key.id: v.map { $0.value }]
         default:
             return [key.id: value.value]
         }
