@@ -3,12 +3,19 @@ import Foundation
 public class Reader {
     private let path: String
     private var objects: [Object] = []
+    public var dictionary: [String: Any] {
+        var dict: [String: Any] = [:]
+        for o in objects {
+            dict[o.key.id] = o.asDictionary()
+        }
+        return dict
+    }
     private var iterator: IndexingIterator<[Character]>!
     private let scanner = Scanner()
     public init(path: String) throws {
         self.path = path
     }
-    public func read() throws -> [Object] {
+    public func parse() throws  {
         let url = URL(fileURLWithPath: path)
         let data = try Data(contentsOf: url)
         let characters = String(data: data, encoding: String.Encoding.utf8)!.characters.map { $0 }
@@ -18,10 +25,10 @@ public class Reader {
                 _ = iterator.next()
             }
         }
-        return parse() as! [Object]
+        self.objects = _parse() as! [Object]
     }
 
-    private func parse() -> Any {
+    private func _parse() -> Any {
         eatBeginEndAnnotation()
         eatWhiteSpace()
         let prefix = String(iterator.prefix(4))
@@ -72,7 +79,7 @@ public class Reader {
                     continue
                 }
             case "=" where key != nil:
-                let value = Value(value: parse(), annotation: getAnnotation())
+                let value = Value(value: _parse(), annotation: getAnnotation())
                 result.append(Object(key: key, value: value))
                 key = nil
                 continue

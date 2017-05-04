@@ -7,6 +7,14 @@ enum Const {
 public struct Object {
     public let key: KeyRef
     public let value: Value
+    public func asDictionary() -> [String: Any] {
+        switch value.value {
+        case let v as [Object]:
+            return [key.id: v.map { $0.asDictionary() }]
+        default:
+            return [key.id: value.value]
+        }
+    }
 }
 
 public struct KeyRef {
