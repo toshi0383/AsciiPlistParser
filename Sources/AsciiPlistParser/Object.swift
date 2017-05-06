@@ -29,6 +29,28 @@ public struct ArrayValue {
     }
 }
 
+// MARK: Collection
+extension ArrayValue: Collection {
+    public var startIndex: Int {
+        return value.startIndex
+    }
+    public var endIndex: Int {
+        return value.endIndex
+    }
+    public func index(after: Int) -> Int {
+        return value.index(after: after)
+    }
+    public subscript(position: Int) -> StringValue {
+        return value[position]
+    }
+}
+
+extension ArrayValue: ExpressibleByArrayLiteral {
+    public init(arrayLiteral elements: StringValue...) {
+        self.value = elements
+    }
+}
+
 // MARK: Hashable
 extension KeyRef: Hashable {
     public var hashValue: Int {

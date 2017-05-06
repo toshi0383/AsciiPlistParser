@@ -12,6 +12,7 @@ extension PlistObject {
 
 extension PlistObject: PlistStringConvertible {
     public func string(_ depth: Int = 0, xcode: Bool = true) -> String {
+        let isNewLineNeeded = true
         var result = depth == 0 ? "\(Const.header)\n" : ""
         result += "{"
         result += isNewLineNeeded ? "\n" : ""
@@ -114,6 +115,12 @@ extension KeyRef: PlistStringConvertible {
             result += _annotation(a)
         }
         return result
+    }
+}
+
+extension String: PlistStringConvertible {
+    func string(_ depth: Int, xcode: Bool = true) -> String {
+        return self
     }
 }
 

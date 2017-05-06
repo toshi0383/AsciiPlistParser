@@ -3,16 +3,16 @@ import Foundation
 public struct PlistObject {
     var keyrefs = [KeyRef]()
     var dict = [KeyRef: Any]()
-    public var isNewLineNeeded: Bool = true
 
     public var count: Int {
         return self.keyrefs.count
     }
 
-    private func keyRef(for key: String) -> KeyRef {
+    private func keyRef(for key: String) -> KeyRef? {
         func samekey(_ element: KeyRef) -> Bool {
             return element.id == key
         }
+        guard keyrefs.contains(where: samekey) else { return nil }
         return keyrefs.filter(samekey)[0]
     }
 
@@ -28,16 +28,18 @@ public struct PlistObject {
             return self.dict[keyref]
         }
         set(newValue) {
-            let keyref = keyRef(for: key)
-            if newValue == nil {
-                self.dict.removeValue(forKey: keyref)
-                self.keyrefs = self.keyrefs.filter { $0 != keyref }
-            } else {
-                if self[key] == nil {
-                    self.keyrefs.append(keyref)
-                    self.dict[keyref] = newValue!
+            if let keyref = keyRef(for: key) {
+                if newValue == nil {
+                    self.dict.removeValue(forKey: keyref)
+                    self.keyrefs = self.keyrefs.filter { $0 != keyref }
                 } else {
-                    self.dict[keyref]! = newValue!
+                    self.dict[keyref] = newValue!
+                }
+            } else {
+                let keyref = KeyRef(id: key, annotation: nil)
+                if let v = newValue {
+                    self.keyrefs.append(keyref)
+                    self.dict[keyref] = v
                 }
             }
         }

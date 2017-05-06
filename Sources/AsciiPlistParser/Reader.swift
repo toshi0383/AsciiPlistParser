@@ -23,8 +23,8 @@ public class Reader {
 
     private func _parse() -> Any {
         eatBeginEndAnnotation()
-        eatWhiteSpace()
-        let prefix = String(iterator.prefix(100))
+        eatWhiteSpaceAndNewLine()
+        let prefix = String(iterator.prefix(2))
         let type = scanner.scan(string: prefix)
         switch type {
         case .object:
@@ -32,19 +32,19 @@ public class Reader {
         case .array:
             return getArray()!
         case .string:
-            return getString()!
+            return getStringValue()!
         default:
             fatalError()
         }
     }
 
-    private func getArray() -> [StringValue]? {
-        var result: [StringValue] = []
+    private func getArray() -> ArrayValue? {
+        var result: ArrayValue = []
         var characters: [Character] = []
         while let next = iterator.next() {
             switch next {
             case "(" where characters.isEmpty:
-                eatWhiteSpace()
+                eatWhiteSpaceAndNewLine()
                 if String(iterator.prefix(1)) == ")" {
                     return []
                 }
@@ -52,13 +52,13 @@ public class Reader {
                 if characters.isEmpty {
                     continue
                 }
-                result.append(StringValue(value: String(characters), annotation: getAnnotation()))
+                result.value.append(StringValue(value: String(characters), annotation: getAnnotation()))
                 characters = []
             case " ":
                 if characters.isEmpty {
                     continue
                 }
-                result.append(StringValue(value: String(characters), annotation: getAnnotation()))
+                result.value.append(StringValue(value: String(characters), annotation: getAnnotation()))
                 characters = []
             case ")":
                 if String(iterator.prefix(1)) == ";" {
@@ -67,35 +67,26 @@ public class Reader {
                 } else {
                     characters.append(next)
                 }
-            case "\n":
-                eatWhiteSpace()
-                continue
             default:
                 characters.append(next)
             }
+            eatWhiteSpaceAndNewLine()
         }
         return nil
     }
 
     private func getObject() -> PlistObject? {
-        eatBeginEndAnnotation()
-        eatWhiteSpace()
         var result: PlistObject = [:]
         var keyref: KeyRef!
-        var isNewLineNeeded = false
         while let next = iterator.next() {
             if next == "}" && String(iterator.prefix(4)) == "\n" {
                 break
             }
+            eatWhiteSpaceAndNewLine()
             eatBeginEndAnnotation()
-            eatWhiteSpace()
             switch next {
             case "{" where keyref == nil:
-                if String(iterator.prefix(1)) == "\n" {
-                    isNewLineNeeded = true
-                    result.isNewLineNeeded = true
-                }
-                eatWhiteSpace()
+                eatWhiteSpaceAndNewLine()
                 if String(iterator.prefix(1)) == "}" {
                     eat(1)
                     return [:]
@@ -107,9 +98,9 @@ public class Reader {
                     continue
                 }
             case "=" where keyref != nil:
+                eatWhiteSpaceAndNewLine()
                 result[keyref.id] = _parse()
                 keyref = nil
-                isNewLineNeeded = false
                 continue
             case "}":
                 switch String(iterator.prefix(1)) {
@@ -121,24 +112,22 @@ public class Reader {
             default:
                 break
             }
-            eatBeginEndAnnotation()
-            eatWhiteSpace()
         }
         return result
     }
 
     private func getKeyRef(prefix: Character) -> KeyRef? {
-        eatBeginEndAnnotation()
-        eatWhiteSpace()
-        guard let string = getString() else {
+        eatWhiteSpaceAndNewLine()
+        guard let value = getStringValue() else {
             return nil
         }
-        return KeyRef(id: String(prefix) + string, annotation: getAnnotation())
+        return KeyRef(id: String(prefix) + value.value, annotation: value.annotation)
     }
 
     private func getAnnotation() -> String? {
-        eatWhiteSpace()
-        guard String(iterator.prefix(3)) == "/* " else {
+        eatWhiteSpaceAndNewLine()
+        let prefix = String(iterator.prefix(8))
+        guard prefix.characters.starts(with: "/* ".characters) && prefix != "/* Begin" else {
             return nil
         }
         eat(3)
@@ -159,43 +148,26 @@ public class Reader {
         return nil
     }
 
-    private func getString() -> String? {
-        eatWhiteSpace()
-        if "};" == String(iterator.prefix(2)) {
-            // This would be an empty string
-            eat(2)
+    private func getStringValue() -> StringValue? {
+        guard let string = getBefore([";", " "]) else {
             return nil
         }
-        var result: [Character] = []
+        return StringValue(value: string, annotation: getAnnotation())
+    }
+
+    private func getBefore(_ strings: [String]) -> String? {
+        var result = ""
         while let next = iterator.next() {
-            result.append(next)
-            switch String(iterator.prefix(1)) {
-            case ";", " ":
-                eat(1)
-                return String(result)
-            default:
-                continue
+            if strings.contains(String(next)) {
+                return result
             }
+            result += String(next)
         }
         return nil
     }
 
-    private func getBefore(_ string: String) -> String {
-        var result = ""
-        while let next = iterator.next() {
-            result += String(next)
-            switch String(iterator.prefix(string.characters.count)) {
-            case string:
-                return result
-            default:
-                continue
-            }
-        }
-        return result
-    }
-
-    private func eatWhiteSpace() {
-        while [" ", "\t",].contains(String(iterator.prefix(1))) {
+    private func eatWhiteSpaceAndNewLine() {
+        while [" ", "\t", "\n",].contains(String(iterator.prefix(1))) {
             eat(1)
         }
     }
@@ -207,7 +179,6 @@ public class Reader {
     }
 
     private func eatBeginEndAnnotation() {
-        eatWhiteSpace()
         guard scanner.scan(string: String(iterator.prefix(4))) == .annotation else {
             return
         }
