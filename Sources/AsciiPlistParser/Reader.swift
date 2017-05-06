@@ -2,7 +2,7 @@ import Foundation
 
 public class Reader {
     private let path: String
-    public var objects: PlistObject = [:]
+    public var object: PlistObject = [:]
     private var iterator: IndexingIterator<[Character]>!
     private let scanner = Scanner()
     public init(path: String) throws {
@@ -18,16 +18,16 @@ public class Reader {
                 _ = iterator.next()
             }
         }
-        self.objects = _parse() as! PlistObject
+        self.object = _parse() as! PlistObject
     }
 
     private func _parse() -> Any {
         eatBeginEndAnnotation()
         eatWhiteSpace()
-        let prefix = String(iterator.prefix(4))
+        let prefix = String(iterator.prefix(100))
         let type = scanner.scan(string: prefix)
         switch type {
-        case .objects:
+        case .object:
             return getObject()!
         case .array:
             return getArray()!
@@ -38,8 +38,8 @@ public class Reader {
         }
     }
 
-    private func getArray() -> [Value]? {
-        var result: [Value] = []
+    private func getArray() -> [StringValue]? {
+        var result: [StringValue] = []
         var characters: [Character] = []
         while let next = iterator.next() {
             switch next {
@@ -52,13 +52,13 @@ public class Reader {
                 if characters.isEmpty {
                     continue
                 }
-                result.append(Value(value: String(characters), annotation: getAnnotation()))
+                result.append(StringValue(value: String(characters), annotation: getAnnotation()))
                 characters = []
             case " ":
                 if characters.isEmpty {
                     continue
                 }
-                result.append(Value(value: String(characters), annotation: getAnnotation()))
+                result.append(StringValue(value: String(characters), annotation: getAnnotation()))
                 characters = []
             case ")":
                 if String(iterator.prefix(1)) == ";" {
@@ -81,7 +81,7 @@ public class Reader {
         eatBeginEndAnnotation()
         eatWhiteSpace()
         var result: PlistObject = [:]
-        var key: KeyRef!
+        var keyref: KeyRef!
         var isNewLineNeeded = false
         while let next = iterator.next() {
             if next == "}" && String(iterator.prefix(4)) == "\n" {
@@ -90,7 +90,7 @@ public class Reader {
             eatBeginEndAnnotation()
             eatWhiteSpace()
             switch next {
-            case "{" where key == nil:
+            case "{" where keyref == nil:
                 if String(iterator.prefix(1)) == "\n" {
                     isNewLineNeeded = true
                     result.isNewLineNeeded = true
@@ -102,14 +102,13 @@ public class Reader {
                 }
                 continue
             case ("a"..."z"), ("A"..."Z"), ("0"..."9"), "_":
-                if key == nil {
-                    key = getKeyRef(prefix: next)
+                if keyref == nil {
+                    keyref = getKeyRef(prefix: next)
                     continue
                 }
-            case "=" where key != nil:
-                let value = Value(value: _parse(), annotation: getAnnotation())
-                result[key.id] = Node(key: key, value: value, isNewLineNeeded: isNewLineNeeded)
-                key = nil
+            case "=" where keyref != nil:
+                result[keyref.id] = _parse()
+                keyref = nil
                 isNewLineNeeded = false
                 continue
             case "}":

@@ -8,7 +8,7 @@ class ReaderTests: XCTestCase {
         let path = pathForFixture(fileName: "test.fixture")
         let parser = try! Reader(path: path)
         try! parser.parse()
-        objects = parser.objects
+        objects = parser.object
     }
 
     func testReader() {
@@ -19,8 +19,7 @@ class ReaderTests: XCTestCase {
         }
         XCTAssertTrue(dict.isNewLineNeeded)
         let obj26 = dict["OBJ_26"]! as! PlistObject
-        let obj26node = dict.dict["OBJ_26"]! 
-        XCTAssertFalse(obj26node.isNewLineNeeded)
+        XCTAssertFalse(obj26.isNewLineNeeded)
         XCTAssertEqual(obj26["isa"]! as! String, "PBXBuildFile")
         let obj24 = dict["OBJ_24"]! as! PlistObject
         XCTAssertEqual(obj24["isa"]! as! String, "XCBuildConfiguration")

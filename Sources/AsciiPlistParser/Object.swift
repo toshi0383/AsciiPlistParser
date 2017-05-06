@@ -4,17 +4,6 @@ enum Const {
     static let header = "// !$*UTF8*$!"
 }
 
-public struct Node {
-    public var key: KeyRef
-    public var value: Value
-    public var isNewLineNeeded = true
-    public init(key: KeyRef, value: Value, isNewLineNeeded: Bool) {
-        self.key = key
-        self.value = value
-        self.isNewLineNeeded = isNewLineNeeded
-    }
-}
-
 public struct KeyRef {
     public var id: String
     public var annotation: String?
@@ -24,12 +13,19 @@ public struct KeyRef {
     }
 }
 
-public struct Value {
-    public var value: Any // OrderedDictionary, String, Array<Any>
+public struct StringValue {
+    public var value: String
     public var annotation: String?
-    public init(value: Any, annotation: String?) {
+    public init(value: String, annotation: String?) {
         self.value = value
         self.annotation = annotation
+    }
+}
+
+public struct ArrayValue {
+    public var value: [StringValue]
+    public init(value: [StringValue]) {
+        self.value = value
     }
 }
 
@@ -44,10 +40,7 @@ extension KeyRef: Hashable {
 protocol AutoEquatable { }
 
 extension KeyRef: AutoEquatable { }
-extension Node: AutoEquatable { }
-
-// MARK: Equatable
-extension Value: Equatable { }
+extension StringValue: AutoEquatable { }
 
 func equals(_ l: Any?, _ r: Any?) -> Bool {
     if l == nil && r == nil {
@@ -57,9 +50,7 @@ func equals(_ l: Any?, _ r: Any?) -> Bool {
         return false
     }
     switch (l, r) {
-    case (let l as [Value], let r as [Value]):
-        return l == r
-    case (let l as Node, let r as Node):
+    case (let l as [StringValue], let r as [StringValue]):
         return l == r
     case (let l as String, let r as String):
         return l == r
@@ -67,9 +58,3 @@ func equals(_ l: Any?, _ r: Any?) -> Bool {
         return false
     }
 }
- public func ==(l: Value, r: Value) -> Bool {
-     guard equals(l.value, r.value) else { return false }
-     guard l.annotation == r.annotation else { return false }
-     return true
- }
- 

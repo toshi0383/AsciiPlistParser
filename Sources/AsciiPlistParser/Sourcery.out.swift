@@ -31,12 +31,11 @@ public func == (lhs: KeyRef, rhs: KeyRef) -> Bool {
     guard compareOptionals(lhs: lhs.annotation, rhs: rhs.annotation, compare: ==) else { return false }
     return true
 }
-// MARK: - Node AutoEquatable
-extension Node: Equatable {} 
-public func == (lhs: Node, rhs: Node) -> Bool {
-    guard lhs.key == rhs.key else { return false }
+// MARK: - StringValue AutoEquatable
+extension StringValue: Equatable {} 
+public func == (lhs: StringValue, rhs: StringValue) -> Bool {
     guard lhs.value == rhs.value else { return false }
-    guard lhs.isNewLineNeeded == rhs.isNewLineNeeded else { return false }
+    guard compareOptionals(lhs: lhs.annotation, rhs: rhs.annotation, compare: ==) else { return false }
     return true
 }
 

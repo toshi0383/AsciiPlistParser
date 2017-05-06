@@ -1,31 +1,62 @@
 import Foundation
 
 public struct PlistObject {
-    var keys = [String]()
-    var dict = [String: Node]()
+    var keyrefs = [KeyRef]()
+    var dict = [KeyRef: Any]()
     public var isNewLineNeeded: Bool = true
 
     public var count: Int {
-        return self.keys.count
+        return self.keyrefs.count
+    }
+
+    private func keyRef(for key: String) -> KeyRef {
+        func samekey(_ element: KeyRef) -> Bool {
+            return element.id == key
+        }
+        return keyrefs.filter(samekey)[0]
     }
 
     public subscript(key: String) -> Any? {
         get {
-            return self.dict[key]?.value.value
+            func samekey(_ element: KeyRef) -> Bool {
+                return element.id == key
+            }
+            guard keyrefs.contains(where: samekey) else {
+                return nil
+            }
+            let keyref = keyrefs.filter(samekey)[0]
+            return self.dict[keyref]
+        }
+        set(newValue) {
+            let keyref = keyRef(for: key)
+            if newValue == nil {
+                self.dict.removeValue(forKey: keyref)
+                self.keyrefs = self.keyrefs.filter { $0 != keyref }
+            } else {
+                if self[key] == nil {
+                    self.keyrefs.append(keyref)
+                    self.dict[keyref] = newValue!
+                } else {
+                    self.dict[keyref]! = newValue!
+                }
+            }
+        }
+    }
+
+    public subscript(keyref: KeyRef) -> Any? {
+        get {
+            return self.dict[keyref]
         }
         set(newValue) {
             if newValue == nil {
-                self.dict.removeValue(forKey: key)
-                self.keys = self.keys.filter {$0 != key}
+                self.dict.removeValue(forKey: keyref)
+                self.keyrefs = self.keyrefs.filter { $0 != keyref }
             } else {
-                if self[key] == nil {
-                    guard let o = newValue as? Node else {
-                        fatalError("newValue must be a Node when adding a new entry.")
-                    }
-                    self.keys.append(key)
-                    self.dict[key] = o
+                if self[keyref] == nil {
+                    self.keyrefs.append(keyref)
+                    self.dict[keyref] = newValue!
                 } else {
-                    self.dict[key]!.value.value = newValue!
+                    self.dict[keyref]! = newValue!
                 }
             }
         }
@@ -35,56 +66,44 @@ public struct PlistObject {
 // MARK: Collection
 extension PlistObject: Collection {
     public func index(after: Int) -> Int {
-        return keys.index(after: after)
+        return keyrefs.index(after: after)
     }
 
-    public subscript(position: Int) -> Node {
-        return dict[keys[position]]!
+    public subscript(position: Int) -> (KeyRef, Any) {
+        let keyref = keyrefs[position]
+        return (keyref, dict[keyref]!)
     }
 
     public var startIndex: Int {
-        return keys.startIndex
+        return keyrefs.startIndex
     }
 
     public var endIndex: Int {
-        return keys.endIndex
+        return keyrefs.endIndex
     }
 }
 
 // MARK: Sequence
 extension PlistObject {
-    public func makeIterator() -> AnyIterator<Node> {
+    public func makeIterator() -> AnyIterator<(KeyRef, Any)> {
         var counter = 0
         return AnyIterator {
-            guard counter<self.keys.count else {
+            guard counter<self.keyrefs.count else {
                 return nil
             }
-            let next = self.dict[self.keys[counter]]
+            let keyref = self.keyrefs[counter]
+            let next = self.dict[keyref]!
             counter += 1
-            return next
+            return (keyref, next)
         }
-    }
-}
-
-extension PlistObject: CustomStringConvertible {
-    public var description: String {
-        let isString = type(of: self.keys[0]) == String.self
-        var result = "["
-        for key in keys {
-            result += isString ? "\"\(key)\"" : "\(key)"
-            result += ": \(self[key]!), "
-        }
-        result = String(result.characters.dropLast(2))
-        result += "]"
-        return result
     }
 }
 
 extension PlistObject: ExpressibleByDictionaryLiteral {
-    public init(dictionaryLiteral elements: (String, Node)...) {
+    public init(dictionaryLiteral elements: (KeyRef, Any)...) {
         self.init()
-        for (key, value) in elements {
-            self[key] = value
+        for (keyref, value) in elements {
+            self[keyref] = value
         }
     }
 }

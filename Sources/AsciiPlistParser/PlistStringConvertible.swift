@@ -18,44 +18,54 @@ extension PlistObject: PlistStringConvertible {
         var lastIsa: String?
         let sorted = self.sorted {
             (fst, snd) in
-            if let isa1 = (fst.value.value as? PlistObject)?["isa"] as? String,
-                let isa2 = (snd.value.value as? PlistObject)?["isa"] as? String {
-                if isa1 > isa2 { return false }
-                if fst.key.id > snd.key.id { return false }
+            guard let fstobj = fst.1 as? PlistObject,
+                let sndobj = snd.1 as? PlistObject else {
+                return true
             }
-            if fst.key.id > snd.key.id { return false }
+            if let isa1 = fstobj["isa"] as? String,
+                let isa2 = sndobj["isa"] as? String {
+                if isa1 > isa2 { return false }
+            }
             return true
         }
-        for (i, node) in sorted.enumerated() {
+        for i in (0..<sorted.count) {
+            let (keyref, object) = sorted[i]
             // pbxproj compatible
-            let isa = (node.value.value as? PlistObject)?["isa"] as? String
-            if let lastIsa = lastIsa {
-                if let isa = isa {
-                    if lastIsa != isa {
+            if let obj = object as? PlistObject {
+                let isa = obj["isa"] as? String
+                if let lastIsa = lastIsa {
+                    if let isa = isa {
+                        if lastIsa != isa {
+                            // write end of lastIsa
+                            result += endSection(lastIsa)
+                            result += "\n"
+                            // write begin of isa
+                            result += "\n"
+                            result += beginSection(isa)
+                            result += "\n"
+                        }
+                    } else {
                         // write end of lastIsa
                         result += endSection(lastIsa)
                         result += "\n"
+                    }
+                } else {
+                    if let isa = isa {
                         // write begin of isa
                         result += "\n"
                         result += beginSection(isa)
                         result += "\n"
                     }
-                } else {
-                    // write end of lastIsa
-                    result += endSection(lastIsa)
-                    result += "\n"
                 }
+                lastIsa = isa
             } else {
-                if let isa = isa {
-                    // write begin of isa
-                    result += "\n"
-                    result += beginSection(isa)
-                    result += "\n"
-                }
+                lastIsa = nil
             }
             // plist writing
-            lastIsa = isa
-            result += node.string(depth + 1)
+            result += keyref.string(depth + 1)
+            result += isNewLineNeeded ? "\n" : " "
+            result += " = "
+            result += (object as! PlistStringConvertible).string(depth + 1, xcode: xcode)
             result += ";"
             result += isNewLineNeeded ? "\n" : " "
             // if isLastObject
@@ -75,39 +85,33 @@ extension PlistObject: PlistStringConvertible {
     }
 }
 
-extension Node: PlistStringConvertible {
+extension StringValue: PlistStringConvertible {
     func string(_ depth: Int, xcode: Bool = true) -> String {
-        var result = ""
-        result += tabs(depth)
-        result += key.id
-        if let annotation = key.annotation {
-            result += " /* \(annotation) */"
+        var result = "\(string)"
+        if let a = annotation {
+            result += _annotation(a)
         }
-        result += " = "
-        result += value.string(depth)
         return result
     }
 }
 
-extension Value: PlistStringConvertible {
+extension ArrayValue: PlistStringConvertible {
     func string(_ depth: Int, xcode: Bool = true) -> String {
         var result = ""
-        switch value {
-        case let object as PlistObject:
-            result += object.string(depth)
-        case let string as String:
-            result += "\(string)"
-            if let annotation = annotation {
-                result += " /* \(annotation) */"
-            }
-        case let values as [Value]:
-            result += "(\n"
-            result += values.map { "\(tabs(depth + 1))\($0.string(depth + 1))," }.joined(separator: "\n")
-            result += "\n"
-            result += tabs(depth)
-            result += ")"
-        default:
-            fatalError()
+        result += "\(tabs(depth))("
+        for s in value {
+            result += "\(tabs(depth))\(s),\n"
+        }
+        result += "\(tabs(depth)))"
+        return result
+    }
+}
+
+extension KeyRef: PlistStringConvertible {
+    func string(_ depth: Int, xcode: Bool = true) -> String {
+        var result = "\(id) "
+        if let a = annotation {
+            result += _annotation(a)
         }
         return result
     }
@@ -118,13 +122,13 @@ func tabs(_ depth: Int) -> String {
 }
 
 func beginSection(_ section: String) -> String {
-    return annotation("Begin \(section) section")
+    return _annotation("Begin \(section) section")
 }
 
 func endSection(_ section: String) -> String {
-    return annotation("End \(section) section")
+    return _annotation("End \(section) section")
 }
 
-func annotation(_ string: String) -> String {
+func _annotation(_ string: String) -> String {
     return "/* \(string) */"
 }
