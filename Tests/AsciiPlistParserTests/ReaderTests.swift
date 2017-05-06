@@ -1,4 +1,5 @@
 import XCTest
+import Foundation
 @testable import AsciiPlistParser
 
 class ReaderTests: XCTestCase {
@@ -9,6 +10,12 @@ class ReaderTests: XCTestCase {
         let parser = try! Reader(path: path)
         try! parser.parse()
         let object = parser.object
+
+        let url = URL(fileURLWithPath: path)
+        let data = try! Data(contentsOf: url)
+        let content = String(data: data, encoding: String.Encoding.utf8)!
+        XCTAssertEqual(object.string(), content)
+
         XCTAssertEqual((object["archiveVersion"] as! StringValue).value, "1")
         guard let dict = object["objects"] as? Object else {
             XCTFail()
