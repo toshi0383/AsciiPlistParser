@@ -1,0 +1,3 @@
+[submodule "Tests/AsciiPlistParserTests/Fixtures"]
+	path = Tests/AsciiPlistParserTests/Fixtures
+	url = git@github.com:toshi0383/xcodeproj-fixtures.git

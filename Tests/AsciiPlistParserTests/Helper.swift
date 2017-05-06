@@ -3,7 +3,7 @@ import AsciiPlistParser
 
 func pathForFixture(fileName: String) -> String {
     #if Xcode
-        return Bundle(for: ReaderTests.self).path(forResource: fileName, ofType: nil)!
+        return Bundle(for: PlistStringConvertibleTests.self).path(forResource: fileName, ofType: nil)!
     #else
         return "Tests/AsciiPlistParserTests/Fixtures/\(fileName)"
     #endif

@@ -16,9 +16,28 @@ extension ReaderTests {
     ("testReader", testReader),
   ]
 }
+extension SingleViewApplicationTests {
+  static var allTests: [(String, (SingleViewApplicationTests) -> () throws -> Void)] = [
+    ("testExample", testExample),
+    ("testPerformanceExample", testPerformanceExample),
+  ]
+}
+extension SingleViewApplicationUITests {
+  static var allTests: [(String, (SingleViewApplicationUITests) -> () throws -> Void)] = [
+    ("testExample", testExample),
+  ]
+}
+extension libraryTests {
+  static var allTests: [(String, (libraryTests) -> () throws -> Void)] = [
+    ("testExample", testExample),
+  ]
+}
 
 XCTMain([
   testCase(PlistStringConvertibleTests.allTests),
   testCase(ReaderTests.allTests),
+  testCase(SingleViewApplicationTests.allTests),
+  testCase(SingleViewApplicationUITests.allTests),
+  testCase(libraryTests.allTests),
 ])
 
