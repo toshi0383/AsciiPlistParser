@@ -45,4 +45,37 @@ class PlistStringConvertibleTests: XCTestCase {
         ].joined(separator: "\n")
         XCTAssertEqual(object.string(1), expected)
     }
+
+    func testPbxprojCompatibility() {
+        let buildfile = Object(dictionaryLiteral: (
+            KeyRef(value: "1111111111", annotation: nil),
+            Object(dictionaryLiteral:
+                (KeyRef(value: "isa", annotation: nil), StringValue(value: "PBXBuildFile", annotation: nil))
+            )
+        ))
+        XCTAssertEqual(buildfile.string(1), [
+            "{",
+            "",
+            "/* Begin PBXBuildFile section */",
+            "\t\t1111111111 = {isa = PBXBuildFile; };",
+            "/* End PBXBuildFile section */",
+            "\t}",
+            ].joined(separator: "\n")
+        )
+        let fileref = Object(dictionaryLiteral: (
+            KeyRef(value: "1111111111", annotation: nil),
+            Object(dictionaryLiteral:
+                (KeyRef(value: "isa", annotation: nil), StringValue(value: "PBXFileReference", annotation: nil))
+            )
+        ))
+        XCTAssertEqual(fileref.string(1), [
+            "{",
+            "",
+            "/* Begin PBXFileReference section */",
+            "\t\t1111111111 = {isa = PBXFileReference; };",
+            "/* End PBXFileReference section */",
+            "\t}",
+            ].joined(separator: "\n")
+        )
+    }
 }

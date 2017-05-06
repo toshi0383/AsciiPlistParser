@@ -1,7 +1,7 @@
 import Foundation
 
 protocol PlistStringConvertible {
-    func string(_ depth: Int, xcode: Bool) -> String
+    func string(_ depth: Int, isNewLineNeeded: Bool) -> String
 }
 
 extension Object {
@@ -11,8 +11,7 @@ extension Object {
 }
 
 extension Object: PlistStringConvertible {
-    public func string(_ depth: Int = 0, xcode: Bool = true) -> String {
-        let isNewLineNeeded = true
+    public func string(_ depth: Int = 0, isNewLineNeeded: Bool = true) -> String {
         var result = depth == 0 ? "\(Const.header)\n" : ""
         result += "{"
         result += isNewLineNeeded ? "\n" : ""
@@ -64,10 +63,22 @@ extension Object: PlistStringConvertible {
                 lastIsa = nil
             }
             // plist writing
-            result += tabs(depth + 1)
+            result += isNewLineNeeded ? tabs(depth + 1) : ""
             result += keyref.string(depth + 1)
             result += " = "
-            result += (object as! PlistStringConvertible).string(depth + 1, xcode: xcode)
+            if isNewLineNeeded {
+                if let isa = ((object as? Object)?["isa"] as? StringValue)?.value {
+                    if ["PBXBuildFile", "PBXFileReference"].contains(isa) {
+                        result += (object as! PlistStringConvertible).string(depth + 1, isNewLineNeeded: false)
+                    } else {
+                        result += (object as! PlistStringConvertible).string(depth + 1, isNewLineNeeded: true)
+                    }
+                } else {
+                    result += (object as! PlistStringConvertible).string(depth + 1, isNewLineNeeded: true)
+                }
+            } else {
+                result += (object as! PlistStringConvertible).string(depth + 1, isNewLineNeeded: false)
+            }
             result += ";"
             result += isNewLineNeeded ? "\n" : " "
             // if isLastObject
@@ -88,7 +99,7 @@ extension Object: PlistStringConvertible {
 }
 
 extension StringValue: PlistStringConvertible {
-    func string(_ depth: Int, xcode: Bool = true) -> String {
+    func string(_ depth: Int, isNewLineNeeded: Bool = true) -> String {
         var result = "\(value)"
         if let a = annotation {
             result += " "
@@ -99,11 +110,11 @@ extension StringValue: PlistStringConvertible {
 }
 
 extension ArrayValue: PlistStringConvertible {
-    func string(_ depth: Int, xcode: Bool = true) -> String {
+    func string(_ depth: Int, isNewLineNeeded: Bool = true) -> String {
         var result = ""
         result += "(\n"
         for s in value {
-            result += "\(tabs(depth + 1))\(s.string(depth, xcode: xcode)),\n"
+            result += "\(tabs(depth + 1))\(s.string(depth, isNewLineNeeded: true)),\n"
         }
         result += "\(tabs(depth)))"
         return result
@@ -111,7 +122,7 @@ extension ArrayValue: PlistStringConvertible {
 }
 
 extension String: PlistStringConvertible {
-    func string(_ depth: Int, xcode: Bool = true) -> String {
+    func string(_ depth: Int, isNewLineNeeded: Bool = true) -> String {
         return self
     }
 }

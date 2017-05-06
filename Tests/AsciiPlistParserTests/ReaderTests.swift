@@ -28,9 +28,11 @@ class ReaderTests: XCTestCase {
         let parser = try! Reader(path: path)
         try! parser.parse()
         let object = parser.object
+        // Update object
         XCTAssert(object.string().contains("archiveVersion = 2") == false)
         object["archiveVersion"] = "2"
         XCTAssert(object.string().contains("archiveVersion = 2") == true)
+        // Update nested object
         XCTAssert(object.string().contains("newObject = hello") == false)
         let obj = object["objects"] as! Object
         let obj31 = obj["OBJ_31"] as! Object

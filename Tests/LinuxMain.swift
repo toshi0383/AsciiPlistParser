@@ -9,6 +9,7 @@ extension PlistStringConvertibleTests {
     ("testStringStringValue", testStringStringValue),
     ("testArrayStringValue", testArrayStringValue),
     ("testObject", testObject),
+    ("testPbxprojCompatibility", testPbxprojCompatibility),
   ]
 }
 extension ReaderTests {
