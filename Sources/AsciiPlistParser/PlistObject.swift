@@ -32,7 +32,27 @@ public struct PlistObject {
     }
 }
 
-extension PlistObject: Sequence {
+// MARK: Collection
+extension PlistObject: Collection {
+    public func index(after: Int) -> Int {
+        return keys.index(after: after)
+    }
+
+    public subscript(position: Int) -> Node {
+        return dict[keys[position]]!
+    }
+
+    public var startIndex: Int {
+        return keys.startIndex
+    }
+
+    public var endIndex: Int {
+        return keys.endIndex
+    }
+}
+
+// MARK: Sequence
+extension PlistObject {
     public func makeIterator() -> AnyIterator<Node> {
         var counter = 0
         return AnyIterator {

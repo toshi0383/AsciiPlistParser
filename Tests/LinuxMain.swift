@@ -3,14 +3,19 @@
 
 
 import XCTest
-extension AsciiPlistParserTests {
-  static var allTests: [(String, (AsciiPlistParserTests) -> () throws -> Void)] = [
+extension PlistStringConvertibleTests {
+  static var allTests: [(String, (PlistStringConvertibleTests) -> () throws -> Void)] = [
+    ("testSorted", testSorted),
+  ]
+}
+extension ReaderTests {
+  static var allTests: [(String, (ReaderTests) -> () throws -> Void)] = [
     ("testReader", testReader),
-    ("testPlistStringConvertible", testPlistStringConvertible),
   ]
 }
 
 XCTMain([
-  testCase(AsciiPlistParserTests.allTests),
+  testCase(PlistStringConvertibleTests.allTests),
+  testCase(ReaderTests.allTests),
 ])
 

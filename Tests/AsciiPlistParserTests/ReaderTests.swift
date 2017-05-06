@@ -1,15 +1,11 @@
 import XCTest
 @testable import AsciiPlistParser
 
-class AsciiPlistParserTests: XCTestCase {
+class ReaderTests: XCTestCase {
     var objects: PlistObject!
     override func setUp() {
         super.setUp()
-        #if Xcode
-            let path = Bundle(for: AsciiPlistParserTests.self).path(forResource: "test.fixture", ofType: nil)!
-        #else
-            let path = "Tests/AsciiPlistParserTests/Fixtures/test.fixture"
-        #endif
+        let path = pathForFixture(fileName: "test.fixture")
         let parser = try! Reader(path: path)
         try! parser.parse()
         objects = parser.objects
@@ -30,9 +26,5 @@ class AsciiPlistParserTests: XCTestCase {
         XCTAssertEqual(obj24["isa"]! as! String, "XCBuildConfiguration")
         let buildSettigs = obj24["buildSettings"] as! PlistObject
         XCTAssertEqual(buildSettigs["ENABLE_TESTABILITY"] as! String, "YES")
-    }
-
-    func testPlistStringConvertible() {
-        print(objects.string())
     }
 }

@@ -1,10 +1,10 @@
 import Foundation
 import AsciiPlistParser
 
-func pathForResource(at path: String) -> String {
+func pathForFixture(fileName: String) -> String {
     #if Xcode
-        return Bundle.main.path(forResource: path, ofType: nil)!
+        return Bundle(for: ReaderTests.self).path(forResource: fileName, ofType: nil)!
     #else
-        return path
+        return "Tests/AsciiPlistParserTests/Fixtures/\(fileName)"
     #endif
 }

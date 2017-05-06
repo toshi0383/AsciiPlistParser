@@ -1,0 +1,32 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		1F00918E1EBA1B7A008ED440 /* PBXContainerItemProxy */ = {
+			containerPortal = OBJ_1 /* Project object */;
+			isa = PBXContainerItemProxy;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		OBJ_31 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		OBJ_38 /* Frameworks */ = {
+			buildActionMask = 0;
+			files = (
+				OBJ_39 /* AsciiPlistParser.framework in Frameworks */,
+				OBJ_40 /* AsciiPlistParser.framework in Frameworks */,
+			);
+			isa = PBXFrameworksBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+	};
+	rootObject = OBJ_1 /* Project object */;
+}
