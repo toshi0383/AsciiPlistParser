@@ -74,6 +74,7 @@ public class Reader {
             case "{" where keyref == nil:
                 eatWhiteSpaceAndNewLine()
                 eatBeginEndAnnotation()
+                eatWhiteSpaceAndNewLine()
                 if String(iterator.prefix(2)) == "};" {
                     eat(1)
                     return [:]
@@ -82,10 +83,14 @@ public class Reader {
             case ";" where keyref == nil:
                 eatWhiteSpaceAndNewLine()
                 eatBeginEndAnnotation()
-                keyref = getKeyRef()
+                eatWhiteSpaceAndNewLine()
+                eatBeginEndAnnotation()
+                if scanner.scan(string: String(iterator.prefix(2))) == .string {
+                    keyref = getKeyRef()
+                }
             case "=" where keyref != nil:
                 eatWhiteSpaceAndNewLine()
-                result[keyref.id] = _parse()
+                result[keyref] = _parse()
                 keyref = nil
             case "}":
                 switch String(iterator.prefix(1)) {
@@ -94,9 +99,18 @@ public class Reader {
                     default:
                         break
                 }
+            case "/":
+                if String(iterator.prefix(1)) == "*" {
+
+                }
             default:
                 eatWhiteSpaceAndNewLine()
                 eatBeginEndAnnotation()
+                eatWhiteSpaceAndNewLine()
+                eatBeginEndAnnotation()
+                if scanner.scan(string: String(iterator.prefix(2))) == .string {
+                    keyref = getKeyRef()
+                }
                 break
             }
         }
@@ -104,10 +118,7 @@ public class Reader {
     }
 
     private func getKeyRef() -> KeyRef? {
-        guard let value = getStringValue() else {
-            return nil
-        }
-        return KeyRef(id: value.value, annotation: value.annotation)
+        return getStringValue()
     }
 
     private func getAnnotation() -> String? {

@@ -24,13 +24,6 @@ fileprivate func compareArrays<T>(lhs: [T], rhs: [T], compare: (_ lhs: T, _ rhs:
 }
 
 // MARK: - AutoEquatable for classes, protocols, structs
-// MARK: - KeyRef AutoEquatable
-extension KeyRef: Equatable {} 
-public func == (lhs: KeyRef, rhs: KeyRef) -> Bool {
-    guard lhs.id == rhs.id else { return false }
-    guard compareOptionals(lhs: lhs.annotation, rhs: rhs.annotation, compare: ==) else { return false }
-    return true
-}
 // MARK: - StringValue AutoEquatable
 extension StringValue: Equatable {} 
 public func == (lhs: StringValue, rhs: StringValue) -> Bool {

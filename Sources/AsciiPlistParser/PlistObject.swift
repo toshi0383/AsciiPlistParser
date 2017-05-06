@@ -10,7 +10,7 @@ public struct PlistObject {
 
     private func keyRef(for key: String) -> KeyRef? {
         func samekey(_ element: KeyRef) -> Bool {
-            return element.id == key
+            return element.value == key
         }
         guard keyrefs.contains(where: samekey) else { return nil }
         return keyrefs.filter(samekey)[0]
@@ -19,7 +19,7 @@ public struct PlistObject {
     public subscript(key: String) -> Any? {
         get {
             func samekey(_ element: KeyRef) -> Bool {
-                return element.id == key
+                return element.value == key
             }
             guard keyrefs.contains(where: samekey) else {
                 return nil
@@ -36,7 +36,7 @@ public struct PlistObject {
                     self.dict[keyref] = newValue!
                 }
             } else {
-                let keyref = KeyRef(id: key, annotation: nil)
+                let keyref = KeyRef(value: key, annotation: nil)
                 if let v = newValue {
                     self.keyrefs.append(keyref)
                     self.dict[keyref] = v

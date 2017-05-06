@@ -35,7 +35,7 @@ class PlistStringConvertibleTests: XCTestCase {
     }
 
     func testPlistObject() {
-        let keyref = KeyRef(id: "1232143145344569590", annotation: "Annotation")
+        let keyref = KeyRef(value: "1232143145344569590", annotation: "Annotation")
         let value = StringValue(value: "Hello", annotation: nil)
         let object = PlistObject(dictionaryLiteral: (keyref, value))
         let expected = [

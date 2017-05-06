@@ -21,13 +21,13 @@ extension PlistObject: PlistStringConvertible {
             (fst, snd) in
             guard let fstobj = fst.1 as? PlistObject,
                 let sndobj = snd.1 as? PlistObject else {
-                return fst.0.id < snd.0.id
+                return fst.0.value < snd.0.value
             }
             if let isa1 = fstobj["isa"] as? String,
                 let isa2 = sndobj["isa"] as? String {
                 if isa1 > isa2 { return false }
             }
-            if fst.0.id > snd.0.id { return false }
+            if fst.0.value > snd.0.value { return false }
             return true
         }
         for i in (0..<sorted.count) {
@@ -106,17 +106,6 @@ extension ArrayValue: PlistStringConvertible {
             result += "\(tabs(depth + 1))\(s.string(depth, xcode: xcode)),\n"
         }
         result += "\(tabs(depth)))"
-        return result
-    }
-}
-
-extension KeyRef: PlistStringConvertible {
-    func string(_ depth: Int, xcode: Bool = true) -> String {
-        var result = "\(id)"
-        if let a = annotation {
-            result += " "
-            result += _annotation(a)
-        }
         return result
     }
 }

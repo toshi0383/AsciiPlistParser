@@ -2,18 +2,18 @@ import XCTest
 @testable import AsciiPlistParser
 
 class ReaderTests: XCTestCase {
-    var objects: PlistObject!
+    var object: PlistObject!
     override func setUp() {
         super.setUp()
         let path = pathForFixture(fileName: "test.fixture")
         let parser = try! Reader(path: path)
         try! parser.parse()
-        objects = parser.object
+        object = parser.object
     }
 
     func testReader() {
-        XCTAssertEqual((objects["archiveVersion"] as! StringValue).value, "1")
-        guard let dict = objects["objects"] as? PlistObject else {
+        XCTAssertEqual((object["archiveVersion"] as! StringValue).value, "1")
+        guard let dict = object["objects"] as? PlistObject else {
             XCTFail()
             return
         }

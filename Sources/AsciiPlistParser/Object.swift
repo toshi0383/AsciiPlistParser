@@ -4,14 +4,7 @@ enum Const {
     static let header = "// !$*UTF8*$!"
 }
 
-public struct KeyRef {
-    public var id: String
-    public var annotation: String?
-    public init(id: String, annotation: String?) {
-        self.id = id
-        self.annotation = annotation
-    }
-}
+public typealias KeyRef = StringValue
 
 public struct StringValue {
     public var value: String
@@ -54,14 +47,13 @@ extension ArrayValue: ExpressibleByArrayLiteral {
 // MARK: Hashable
 extension KeyRef: Hashable {
     public var hashValue: Int {
-        return id.hashValue
+        return value.hashValue
     }
 }
 
 // MARK: AutoEquatable
 protocol AutoEquatable { }
 
-extension KeyRef: AutoEquatable { }
 extension StringValue: AutoEquatable { }
 
 func equals(_ l: Any?, _ r: Any?) -> Bool {

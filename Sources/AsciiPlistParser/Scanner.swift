@@ -1,7 +1,7 @@
 import Foundation
 
 enum Type {
-    case key, object, array, annotation, string
+    case key, object, array, annotation, string, unknown
 }
 
 class Scanner {
@@ -17,8 +17,10 @@ class Scanner {
                 return .array
             case "{":
                 return .object
-            default:
+            case ("a"..."z"), ("A"..."Z"), ("0"..."9"), "_", "\"":
                 return .string
+            default:
+                return .unknown
             }
         }
         fatalError("Unknown type!: \(string)")
