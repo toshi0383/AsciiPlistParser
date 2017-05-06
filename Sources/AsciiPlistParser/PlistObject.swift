@@ -1,6 +1,6 @@
 import Foundation
 
-public final class PlistObject {
+public final class Object {
     var keyrefs = [KeyRef]()
     var dict = [KeyRef: Any]()
 
@@ -66,7 +66,7 @@ public final class PlistObject {
 }
 
 // MARK: Collection
-extension PlistObject: Collection {
+extension Object: Collection {
     public func index(after: Int) -> Int {
         return keyrefs.index(after: after)
     }
@@ -86,7 +86,7 @@ extension PlistObject: Collection {
 }
 
 // MARK: Sequence
-extension PlistObject {
+extension Object {
     public func makeIterator() -> AnyIterator<(KeyRef, Any)> {
         var counter = 0
         return AnyIterator {
@@ -101,7 +101,7 @@ extension PlistObject {
     }
 }
 
-extension PlistObject: ExpressibleByDictionaryLiteral {
+extension Object: ExpressibleByDictionaryLiteral {
     public convenience init(dictionaryLiteral elements: (KeyRef, Any)...) {
         self.init()
         for (keyref, value) in elements {

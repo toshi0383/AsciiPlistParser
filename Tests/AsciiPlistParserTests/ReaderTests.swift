@@ -10,15 +10,15 @@ class ReaderTests: XCTestCase {
         try! parser.parse()
         let object = parser.object
         XCTAssertEqual((object["archiveVersion"] as! StringValue).value, "1")
-        guard let dict = object["objects"] as? PlistObject else {
+        guard let dict = object["objects"] as? Object else {
             XCTFail()
             return
         }
-        let obj1 = dict["1F88C5881EB47C3C002A5302"]! as! PlistObject
+        let obj1 = dict["1F88C5881EB47C3C002A5302"]! as! Object
         XCTAssertEqual((obj1["isa"]! as! StringValue).value, "PBXBuildFile")
-        let obj2 = dict["1F88C5AD1EB47C3C002A5302"]! as! PlistObject
+        let obj2 = dict["1F88C5AD1EB47C3C002A5302"]! as! Object
         XCTAssertEqual((obj2["isa"]! as! StringValue).value, "XCBuildConfiguration")
-        let buildSettigs = obj2["buildSettings"] as! PlistObject
+        let buildSettigs = obj2["buildSettings"] as! Object
         XCTAssertEqual((buildSettigs["ENABLE_TESTABILITY"] as! StringValue).value, "YES")
     }
 #endif
@@ -32,8 +32,8 @@ class ReaderTests: XCTestCase {
         object["archiveVersion"] = "2"
         XCTAssert(object.string().contains("archiveVersion = 2") == true)
         XCTAssert(object.string().contains("newObject = hello") == false)
-        let obj = object["objects"] as! PlistObject
-        let obj31 = obj["OBJ_31"] as! PlistObject
+        let obj = object["objects"] as! Object
+        let obj31 = obj["OBJ_31"] as! Object
         obj31["newObject"] = StringValue(value: "hello", annotation: nil)
         XCTAssert(object.string().contains("newObject = hello") == true)
     }

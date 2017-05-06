@@ -2,7 +2,7 @@ import Foundation
 
 public class Reader {
     private let path: String
-    public var object: PlistObject = [:]
+    public var object: Object = [:]
     private var iterator: IndexingIterator<[Character]>!
     private let scanner = Scanner()
     public init(path: String) throws {
@@ -18,7 +18,7 @@ public class Reader {
                 _ = iterator.next()
             }
         }
-        self.object = _parse() as! PlistObject
+        self.object = _parse() as! Object
     }
 
     private func _parse() -> Any {
@@ -63,8 +63,8 @@ public class Reader {
         return nil
     }
 
-    private func getObject() -> PlistObject? {
-        let result: PlistObject = [:]
+    private func getObject() -> Object? {
+        let result: Object = [:]
         var keyref: KeyRef!
         while let next = iterator.next() {
             if next == "}" && String(iterator.prefix(4)) == "\n" {

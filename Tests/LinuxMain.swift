@@ -8,12 +8,14 @@ extension PlistStringConvertibleTests {
     ("testSorted", testSorted),
     ("testStringStringValue", testStringStringValue),
     ("testArrayStringValue", testArrayStringValue),
-    ("testPlistObject", testPlistObject),
+    ("testObject", testObject),
   ]
 }
 extension ReaderTests {
   static var allTests: [(String, (ReaderTests) -> () throws -> Void)] = [
     ("testReader", testReader),
+    ("testReader", testReader),
+    ("testModification", testModification),
   ]
 }
 extension SingleViewApplicationTests {

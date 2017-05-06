@@ -34,10 +34,10 @@ class PlistStringConvertibleTests: XCTestCase {
         XCTAssertEqual(value.string(0), expected)
     }
 
-    func testPlistObject() {
+    func testObject() {
         let keyref = KeyRef(value: "1232143145344569590", annotation: "Annotation")
         let value = StringValue(value: "Hello", annotation: nil)
-        let object = PlistObject(dictionaryLiteral: (keyref, value))
+        let object = Object(dictionaryLiteral: (keyref, value))
         let expected = [
             "{",
             "\t\t1232143145344569590 /* Annotation */ = Hello;",

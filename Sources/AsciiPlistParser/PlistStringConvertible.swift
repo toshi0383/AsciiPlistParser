@@ -4,13 +4,13 @@ protocol PlistStringConvertible {
     func string(_ depth: Int, xcode: Bool) -> String
 }
 
-extension PlistObject {
+extension Object {
     public func data() -> Data {
         return (string() as NSString).data(using: String.Encoding.utf8.rawValue)!
     }
 }
 
-extension PlistObject: PlistStringConvertible {
+extension Object: PlistStringConvertible {
     public func string(_ depth: Int = 0, xcode: Bool = true) -> String {
         let isNewLineNeeded = true
         var result = depth == 0 ? "\(Const.header)\n" : ""
@@ -19,8 +19,8 @@ extension PlistObject: PlistStringConvertible {
         var lastIsa: String?
         let sorted = self.sorted {
             (fst, snd) in
-            guard let fstobj = fst.1 as? PlistObject,
-                let sndobj = snd.1 as? PlistObject else {
+            guard let fstobj = fst.1 as? Object,
+                let sndobj = snd.1 as? Object else {
                 return fst.0.value < snd.0.value
             }
             if let isa1 = fstobj["isa"] as? String,
@@ -33,7 +33,7 @@ extension PlistObject: PlistStringConvertible {
         for i in (0..<sorted.count) {
             let (keyref, object) = sorted[i]
             // pbxproj compatible
-            if let obj = object as? PlistObject {
+            if let obj = object as? Object {
                 let isa = (obj["isa"] as? StringValue)?.value
                 if let lastIsa = lastIsa {
                     if let isa = isa {
