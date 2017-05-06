@@ -21,19 +21,20 @@ extension PlistObject: PlistStringConvertible {
             (fst, snd) in
             guard let fstobj = fst.1 as? PlistObject,
                 let sndobj = snd.1 as? PlistObject else {
-                return true
+                return fst.0.id < snd.0.id
             }
             if let isa1 = fstobj["isa"] as? String,
                 let isa2 = sndobj["isa"] as? String {
                 if isa1 > isa2 { return false }
             }
+            if fst.0.id > snd.0.id { return false }
             return true
         }
         for i in (0..<sorted.count) {
             let (keyref, object) = sorted[i]
             // pbxproj compatible
             if let obj = object as? PlistObject {
-                let isa = obj["isa"] as? String
+                let isa = (obj["isa"] as? StringValue)?.value
                 if let lastIsa = lastIsa {
                     if let isa = isa {
                         if lastIsa != isa {
@@ -63,8 +64,8 @@ extension PlistObject: PlistStringConvertible {
                 lastIsa = nil
             }
             // plist writing
+            result += tabs(depth + 1)
             result += keyref.string(depth + 1)
-            result += isNewLineNeeded ? "\n" : " "
             result += " = "
             result += (object as! PlistStringConvertible).string(depth + 1, xcode: xcode)
             result += ";"
@@ -88,8 +89,9 @@ extension PlistObject: PlistStringConvertible {
 
 extension StringValue: PlistStringConvertible {
     func string(_ depth: Int, xcode: Bool = true) -> String {
-        var result = "\(string)"
+        var result = "\(value)"
         if let a = annotation {
+            result += " "
             result += _annotation(a)
         }
         return result
@@ -99,9 +101,9 @@ extension StringValue: PlistStringConvertible {
 extension ArrayValue: PlistStringConvertible {
     func string(_ depth: Int, xcode: Bool = true) -> String {
         var result = ""
-        result += "\(tabs(depth))("
+        result += "(\n"
         for s in value {
-            result += "\(tabs(depth))\(s),\n"
+            result += "\(tabs(depth + 1))\(s.string(depth, xcode: xcode)),\n"
         }
         result += "\(tabs(depth)))"
         return result
@@ -110,8 +112,9 @@ extension ArrayValue: PlistStringConvertible {
 
 extension KeyRef: PlistStringConvertible {
     func string(_ depth: Int, xcode: Bool = true) -> String {
-        var result = "\(id) "
+        var result = "\(id)"
         if let a = annotation {
+            result += " "
             result += _annotation(a)
         }
         return result

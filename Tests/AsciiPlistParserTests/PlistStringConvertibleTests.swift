@@ -18,6 +18,7 @@ class PlistStringConvertibleTests: XCTestCase {
         let value = StringValue(value: "Hello", annotation: "Hello.swift in Sources")
         let expected = "Hello /* Hello.swift in Sources */"
         XCTAssertEqual(value.string(0), expected)
+        XCTAssertEqual(StringValue(value: "Hello", annotation: nil).string(0), "Hello")
     }
 
     func testArrayStringValue() {
@@ -38,7 +39,7 @@ class PlistStringConvertibleTests: XCTestCase {
         let value = StringValue(value: "Hello", annotation: nil)
         let object = PlistObject(dictionaryLiteral: (keyref, value))
         let expected = [
-            "obj1 = {",
+            "{",
             "\t\t1232143145344569590 /* Annotation */ = Hello;",
             "\t}",
         ].joined(separator: "\n")
