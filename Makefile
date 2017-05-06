@@ -1,5 +1,10 @@
 .PHONY = start-daemons
+SOURCERY = ./.build/debug/sourcery
 
+bootstrap:
+	SWIFTPM_DEVELOPMENT_AsciiPlistParser=YES swift build
+	swift package generate-xcodeproj
+	# todo: Add fixtures to xcodeproj
 start-daemons:
-	sourcery --templates Resources/SourceryTemplates/AutoEquatables.stencil --sources Sources/AsciiPlistParser/ --output Sources/AsciiPlistParser/Sourcery.out.swift
-	sourcery --templates Resources/SourceryTemplates/LinuxMain.stencil --sources Tests/AsciiPlistParserTests/ --output Tests/LinuxMain.swift --watch
+	$(SOURCERY) --templates Resources/SourceryTemplates/AutoEquatables.stencil --sources Sources/AsciiPlistParser/ --output Sources/AsciiPlistParser/Sourcery.out.swift
+	$(SOURCERY) --templates Resources/SourceryTemplates/LinuxMain.stencil --sources Tests/AsciiPlistParserTests/ --output Tests/LinuxMain.swift --watch
