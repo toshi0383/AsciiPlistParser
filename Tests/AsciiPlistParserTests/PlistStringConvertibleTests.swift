@@ -6,10 +6,10 @@ import Foundation
 class PlistStringConvertibleTests: XCTestCase {
     func testSorted() {
         super.setUp()
-        let parser = try! Reader(path: pathForFixture(fileName: "unsorted.fixture"))
+        let parser = try! Reader(path: pathForFixture(fileName: "Behavior/unsorted.fixture"))
         try! parser.parse()
         let objects = parser.object
-        let url = URL(fileURLWithPath: pathForFixture(fileName: "sorted.fixture"))
+        let url = URL(fileURLWithPath: pathForFixture(fileName: "Behavior/sorted.fixture"))
         let expected = NSString(data: try! Data(contentsOf: url), encoding: String.Encoding.utf8.rawValue)!
         XCTAssertEqual(objects.string(), expected as String)
     }
