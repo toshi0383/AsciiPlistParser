@@ -5,13 +5,30 @@ import Foundation
 
 class PlistStringConvertibleTests: XCTestCase {
     func testSorted() {
-        super.setUp()
         let parser = try! Reader(path: pathForFixture(fileName: "Behavior/unsorted.fixture"))
         try! parser.parse()
         let objects = parser.object
         let url = URL(fileURLWithPath: pathForFixture(fileName: "Behavior/sorted.fixture"))
         let expected = NSString(data: try! Data(contentsOf: url), encoding: String.Encoding.utf8.rawValue)!
         XCTAssertEqual(objects.string(), expected as String)
+    }
+
+    func testSorted002() {
+        let object = Object(dictionaryLiteral:
+            fileRef(with: "A12345"),
+            buildFile(with: "B1234"),
+            buildFile(with: "B1233"),
+            fileRef(with: "A12346"),
+            buildFile(with: "B1231")
+        )
+        let keyrefs = object._sorted().map{$0.0.value}
+        XCTAssertEqual(keyrefs, [
+            "B1231",
+            "B1233",
+            "B1234",
+            "A12345",
+            "A12346",
+        ])
     }
 
     func testStringStringValue() {
@@ -47,12 +64,9 @@ class PlistStringConvertibleTests: XCTestCase {
     }
 
     func testPbxprojCompatibility() {
-        let buildfile = Object(dictionaryLiteral: (
-            KeyRef(value: "1111111111", annotation: nil),
-            Object(dictionaryLiteral:
-                (KeyRef(value: "isa", annotation: nil), StringValue(value: "PBXBuildFile", annotation: nil))
-            )
-        ))
+        let buildfile = Object(dictionaryLiteral: 
+            buildFile(with: "1111111111")
+        )
         XCTAssertEqual(buildfile.string(1), [
             "{",
             "",
@@ -62,12 +76,9 @@ class PlistStringConvertibleTests: XCTestCase {
             "\t}",
             ].joined(separator: "\n")
         )
-        let fileref = Object(dictionaryLiteral: (
-            KeyRef(value: "1111111111", annotation: nil),
-            Object(dictionaryLiteral:
-                (KeyRef(value: "isa", annotation: nil), StringValue(value: "PBXFileReference", annotation: nil))
-            )
-        ))
+        let fileref = Object(dictionaryLiteral: 
+            fileRef(with: "1111111111")
+        )
         XCTAssertEqual(fileref.string(1), [
             "{",
             "",

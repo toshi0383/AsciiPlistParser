@@ -11,24 +11,38 @@ extension Object {
 }
 
 extension Object: PlistStringConvertible {
+    func _sorted() -> [(KeyRef, Any)] {
+        return self.sorted {
+            (fst, snd) in
+            if fst.0.value == "isa" {
+                return true
+            } else if snd.0.value == "isa" {
+                return false
+            }
+            guard let fstobj = fst.1 as? Object,
+                let sndobj = snd.1 as? Object else {
+                    return fst.0.value < snd.0.value
+            }
+            if let isa1 = fstobj["isa"] as? StringValue,
+                let isa2 = sndobj["isa"] as? StringValue {
+                if isa1.value == isa2.value {
+                    return fst.0.value < snd.0.value
+                } else {
+                    return isa1.value < isa2.value
+                }
+            }
+            if fst.0.value > snd.0.value {
+                return false
+            }
+            return true
+        }
+    }
     public func string(_ depth: Int = 0, isNewLineNeeded: Bool = true) -> String {
         var result = depth == 0 ? "\(Const.header)\n" : ""
         result += "{"
         result += isNewLineNeeded ? "\n" : ""
         var lastIsa: String?
-        let sorted = self.sorted {
-            (fst, snd) in
-            guard let fstobj = fst.1 as? Object,
-                let sndobj = snd.1 as? Object else {
-                return fst.0.value < snd.0.value
-            }
-            if let isa1 = fstobj["isa"] as? String,
-                let isa2 = sndobj["isa"] as? String {
-                if isa1 > isa2 { return false }
-            }
-            if fst.0.value > snd.0.value { return false }
-            return true
-        }
+        let sorted = self._sorted()
         for i in (0..<sorted.count) {
             let (keyref, object) = sorted[i]
             // pbxproj compatible

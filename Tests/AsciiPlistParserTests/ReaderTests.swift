@@ -3,10 +3,12 @@ import Foundation
 @testable import AsciiPlistParser
 
 class ReaderTests: XCTestCase {
-#if Xcode
-#else
     func testReader() {
+#if Xcode
+        let path = pathForFixture(fileName: "test.pbxproj")
+#else
         let path = pathForFixture(fileName: "Xcode/8.3.2/SingleViewApplication/SingleViewApplication.xcodeproj/project.pbxproj")
+#endif
         let parser = try! Reader(path: path)
         try! parser.parse()
         let object = parser.object
@@ -28,7 +30,6 @@ class ReaderTests: XCTestCase {
         let buildSettigs = obj2["buildSettings"] as! Object
         XCTAssertEqual((buildSettigs["ENABLE_TESTABILITY"] as! StringValue).value, "YES")
     }
-#endif
 
     func testModification() {
         let path = pathForFixture(fileName: "Behavior/unsorted.fixture")

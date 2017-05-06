@@ -9,3 +9,21 @@ func pathForFixture(fileName: String) -> String {
         return "Tests/AsciiPlistParserTests/Fixtures/\(fileName)"
     #endif
 }
+
+func buildFile(with keyrefValue: String) -> (KeyRef, Any) {
+    return (
+        KeyRef(value: keyrefValue, annotation: nil),
+        Object(dictionaryLiteral:
+            (KeyRef(value: "isa", annotation: nil), StringValue(value: "PBXBuildFile", annotation: nil))
+        )
+    )
+}
+
+func fileRef(with keyrefValue: String) -> (KeyRef, Any) {
+    return (
+        KeyRef(value: keyrefValue, annotation: nil),
+        Object(dictionaryLiteral:
+            (KeyRef(value: "isa", annotation: nil), StringValue(value: "PBXFileReference", annotation: nil))
+        )
+    )
+}
