@@ -6,7 +6,7 @@ enum Const {
 
 public typealias KeyRef = StringValue
 
-public struct StringValue {
+public final class StringValue {
     public var value: String
     public var annotation: String?
     public init(value: String, annotation: String?) {
@@ -15,7 +15,7 @@ public struct StringValue {
     }
 }
 
-public struct ArrayValue {
+public final class ArrayValue {
     public var value: [StringValue]
     public init(value: [StringValue]) {
         self.value = value
@@ -39,7 +39,8 @@ extension ArrayValue: Collection {
 }
 
 extension ArrayValue: ExpressibleByArrayLiteral {
-    public init(arrayLiteral elements: StringValue...) {
+    public convenience init(arrayLiteral elements: StringValue...) {
+        self.init(value: [])
         self.value = elements
     }
 }

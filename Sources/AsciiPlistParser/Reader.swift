@@ -39,13 +39,13 @@ public class Reader {
     }
 
     private func getArray() -> ArrayValue? {
-        var result: ArrayValue = []
+        let result = ArrayValue(value: [])
         while let next = iterator.next() {
             switch next {
             case "(":
                 eatWhiteSpaceAndNewLine()
                 if String(iterator.prefix(1)) == ")" {
-                    return []
+                    return result
                 }
                 result.value.append(getStringValue()!)
             case ",":
@@ -64,7 +64,7 @@ public class Reader {
     }
 
     private func getObject() -> PlistObject? {
-        var result: PlistObject = [:]
+        let result: PlistObject = [:]
         var keyref: KeyRef!
         while let next = iterator.next() {
             if next == "}" && String(iterator.prefix(4)) == "\n" {

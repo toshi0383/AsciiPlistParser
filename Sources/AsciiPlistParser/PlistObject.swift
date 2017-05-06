@@ -1,6 +1,6 @@
 import Foundation
 
-public struct PlistObject {
+public final class PlistObject {
     var keyrefs = [KeyRef]()
     var dict = [KeyRef: Any]()
 
@@ -102,7 +102,7 @@ extension PlistObject {
 }
 
 extension PlistObject: ExpressibleByDictionaryLiteral {
-    public init(dictionaryLiteral elements: (KeyRef, Any)...) {
+    public convenience init(dictionaryLiteral elements: (KeyRef, Any)...) {
         self.init()
         for (keyref, value) in elements {
             self[keyref] = value
