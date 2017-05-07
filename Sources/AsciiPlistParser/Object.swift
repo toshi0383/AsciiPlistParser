@@ -13,6 +13,16 @@ public final class StringValue {
         self.value = value
         self.annotation = annotation
     }
+    public var nonQuotedValue: String {
+        var chars: [Character] = []
+        for (i, c) in value.characters.enumerated() {
+            if (i == 0 || i == value.characters.count - 1) && c == "\"" {
+            } else {
+                chars.append(c)
+            }
+        }
+        return String(chars)
+    }
 }
 
 public final class ArrayValue {

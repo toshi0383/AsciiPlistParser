@@ -18,6 +18,7 @@ class PlistStringConvertibleTests: XCTestCase {
             fileRef(with: "A12345"),
             buildFile(with: "B1234"),
             buildFile(with: "B1233"),
+            buildFile(with: "\"C1233\""),
             fileRef(with: "A12346"),
             buildFile(with: "B1231")
         )
@@ -26,6 +27,7 @@ class PlistStringConvertibleTests: XCTestCase {
             "B1231",
             "B1233",
             "B1234",
+            "\"C1233\"",
             "A12345",
             "A12346",
         ])
