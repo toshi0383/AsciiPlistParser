@@ -8,7 +8,7 @@ public final class Object {
         return self.keyrefs.count
     }
 
-    private func keyRef(for key: String) -> KeyRef? {
+    public func keyRef(for key: String) -> KeyRef? {
         func samekey(_ element: KeyRef) -> Bool {
             return element.value == key
         }
