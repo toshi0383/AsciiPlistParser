@@ -42,14 +42,7 @@ public class Reader {
         let result = ArrayValue(value: [])
         while let next = iterator.next() {
             switch next {
-            case "(":
-                eatWhiteSpaceAndNewLine()
-                if String(iterator.prefix(2)) == ");" {
-                    eat(1)
-                    return result
-                }
-                result.value.append(getStringValue()!)
-            case ",":
+            case "(", ",":
                 eatWhiteSpaceAndNewLine()
                 if String(iterator.prefix(2)) == ");" {
                     eat(1)
