@@ -57,6 +57,21 @@ extension ArrayValue: ExpressibleByArrayLiteral {
     }
 }
 
+// MARK: ExpressibleByStringLiteral
+extension StringValue: ExpressibleByStringLiteral {
+    public convenience init(stringLiteral value: String) {
+        self.init(value: value, annotation: nil)
+    }
+
+    public convenience init(extendedGraphemeClusterLiteral value: String) {
+        self.init(value: value, annotation: nil)
+    }
+
+    public convenience init(unicodeScalarLiteral value: String) {
+        self.init(value: value, annotation: nil)
+    }
+}
+
 // MARK: Hashable
 extension KeyRef: Hashable {
     public var hashValue: Int {
