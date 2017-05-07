@@ -1,85 +1,125 @@
 import Foundation
 
-enum Const {
-    static let header = "// !$*UTF8*$!"
-}
+public final class Object {
+    var keyrefs = [KeyRef]()
+    var dict = [KeyRef: Any]()
 
-public typealias KeyRef = StringValue
-
-public final class StringValue {
-    public var value: String
-    public var annotation: String?
-    public init(value: String, annotation: String?) {
-        self.value = value
-        self.annotation = annotation
+    public var count: Int {
+        return self.keyrefs.count
     }
-    public var nonQuotedValue: String {
-        var chars: [Character] = []
-        for (i, c) in value.characters.enumerated() {
-            if (i == 0 || i == value.characters.count - 1) && c == "\"" {
+
+    private func keyRef(for key: String) -> KeyRef? {
+        func samekey(_ element: KeyRef) -> Bool {
+            return element.value == key
+        }
+        guard keyrefs.contains(where: samekey) else { return nil }
+        return keyrefs.filter(samekey)[0]
+    }
+
+    public subscript(key: String) -> Any? {
+        get {
+            func samekey(_ element: KeyRef) -> Bool {
+                return element.value == key
+            }
+            guard keyrefs.contains(where: samekey) else {
+                return nil
+            }
+            let keyref = keyrefs.filter(samekey)[0]
+            return self.dict[keyref]
+        }
+        set(newValue) {
+            if let keyref = keyRef(for: key) {
+                if newValue == nil {
+                    self.dict.removeValue(forKey: keyref)
+                    self.keyrefs = self.keyrefs.filter { $0 != keyref }
+                } else {
+                    self.dict[keyref] = newValue!
+                }
             } else {
-                chars.append(c)
+                let keyref = KeyRef(value: key, annotation: nil)
+                if let v = newValue {
+                    self.keyrefs.append(keyref)
+                    self.dict[keyref] = v
+                }
             }
         }
-        return String(chars)
     }
-}
 
-public final class ArrayValue {
-    public var value: [StringValue]
-    public init(value: [StringValue]) {
-        self.value = value
+    public subscript(keyref: KeyRef) -> Any? {
+        get {
+            return self.dict[keyref]
+        }
+        set(newValue) {
+            if newValue == nil {
+                self.dict.removeValue(forKey: keyref)
+                self.keyrefs = self.keyrefs.filter { $0 != keyref }
+            } else {
+                if self[keyref] == nil {
+                    self.keyrefs.append(keyref)
+                    self.dict[keyref] = newValue!
+                } else {
+                    self.dict[keyref]! = newValue!
+                }
+            }
+        }
     }
 }
 
 // MARK: Collection
-extension ArrayValue: Collection {
-    public var startIndex: Int {
-        return value.startIndex
-    }
-    public var endIndex: Int {
-        return value.endIndex
-    }
+extension Object: Collection {
     public func index(after: Int) -> Int {
-        return value.index(after: after)
+        return keyrefs.index(after: after)
     }
-    public subscript(position: Int) -> StringValue {
-        return value[position]
+
+    public subscript(position: Int) -> (KeyRef, Any) {
+        let keyref = keyrefs[position]
+        return (keyref, dict[keyref]!)
+    }
+
+    public var startIndex: Int {
+        return keyrefs.startIndex
+    }
+
+    public var endIndex: Int {
+        return keyrefs.endIndex
     }
 }
 
-extension ArrayValue: ExpressibleByArrayLiteral {
-    public convenience init(arrayLiteral elements: StringValue...) {
-        self.init(value: [])
-        self.value = elements
+// MARK: Sequence
+extension Object {
+    public func makeIterator() -> AnyIterator<(KeyRef, Any)> {
+        var counter = 0
+        return AnyIterator {
+            guard counter<self.keyrefs.count else {
+                return nil
+            }
+            let keyref = self.keyrefs[counter]
+            let next = self.dict[keyref]!
+            counter += 1
+            return (keyref, next)
+        }
     }
 }
 
-// MARK: Hashable
-extension KeyRef: Hashable {
-    public var hashValue: Int {
-        return value.hashValue
+// MARK: ExpressibleByDictionaryLiteral
+extension Object: ExpressibleByDictionaryLiteral {
+    public convenience init(dictionaryLiteral elements: (KeyRef, Any)...) {
+        self.init()
+        for (keyref, value) in elements {
+            self[keyref] = value
+        }
     }
 }
 
-// MARK: AutoEquatable
-protocol AutoEquatable { }
-
-extension StringValue: AutoEquatable { }
-
-func equals(_ l: Any?, _ r: Any?) -> Bool {
-    if l == nil && r == nil {
-        return true
+// MARK: Utilities
+extension Object {
+    public func string(for key: String) -> String? {
+        return (self[key] as? StringValue)?.value
     }
-    guard let l = l, let r = r else {
-        return false
+    public func stringArray(for key: String) -> [String]? {
+        return (self[key] as? ArrayValue)?.value.map { $0.value }
     }
-    switch (l, r) {
-    case (let l as [StringValue], let r as [StringValue]):
-        return l == r
-    case (let l as String, let r as String):
-        return l == r
-    default:
-        return false
+    public func object(for key: String) -> Object? {
+        return self[key] as? Object
     }
 }

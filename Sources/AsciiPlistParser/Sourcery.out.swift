@@ -24,6 +24,12 @@ fileprivate func compareArrays<T>(lhs: [T], rhs: [T], compare: (_ lhs: T, _ rhs:
 }
 
 // MARK: - AutoEquatable for classes, protocols, structs
+// MARK: - ArrayValue AutoEquatable
+extension ArrayValue: Equatable {} 
+public func == (lhs: ArrayValue, rhs: ArrayValue) -> Bool {
+    guard lhs.value == rhs.value else { return false }
+    return true
+}
 // MARK: - StringValue AutoEquatable
 extension StringValue: Equatable {} 
 public func == (lhs: StringValue, rhs: StringValue) -> Bool {

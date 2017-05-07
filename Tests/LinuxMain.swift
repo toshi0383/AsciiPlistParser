@@ -6,6 +6,7 @@ import XCTest
 extension PlistStringConvertibleTests {
   static var allTests: [(String, (PlistStringConvertibleTests) -> () throws -> Void)] = [
     ("testSorted", testSorted),
+    ("testSorted002", testSorted002),
     ("testStringStringValue", testStringStringValue),
     ("testArrayStringValue", testArrayStringValue),
     ("testObject", testObject),
@@ -14,7 +15,6 @@ extension PlistStringConvertibleTests {
 }
 extension ReaderTests {
   static var allTests: [(String, (ReaderTests) -> () throws -> Void)] = [
-    ("testReader", testReader),
     ("testReader", testReader),
     ("testModification", testModification),
   ]
