@@ -123,3 +123,6 @@ extension Object {
         return self[key] as? Object
     }
 }
+
+// MARK: AutoEquatable
+extension Object: AutoEquatable { }
