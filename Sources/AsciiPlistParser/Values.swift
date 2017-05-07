@@ -2,6 +2,7 @@ import Foundation
 
 enum Const {
     static let header = "// !$*UTF8*$!"
+    static let noNewLineIsas = ["PBXBuildFile", "PBXFileReference"]
 }
 
 // MARK: Type Definition

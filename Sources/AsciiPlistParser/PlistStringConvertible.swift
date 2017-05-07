@@ -82,7 +82,7 @@ extension Object: PlistStringConvertible {
             result += " = "
             if isNewLineNeeded {
                 if let isa = ((object as? Object)?["isa"] as? StringValue)?.value {
-                    if ["PBXBuildFile", "PBXFileReference"].contains(isa) {
+                    if Const.noNewLineIsas.contains(isa) {
                         result += (object as! PlistStringConvertible).string(depth + 1, isNewLineNeeded: false)
                     } else {
                         result += (object as! PlistStringConvertible).string(depth + 1, isNewLineNeeded: true)
