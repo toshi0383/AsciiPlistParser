@@ -1,6 +1,6 @@
 import Foundation
 
-enum AsciiPlistParserError: Error {
+public enum AsciiPlistParserError: Error {
     case fileNotFound(path: String)
     case parseFailed
 }
