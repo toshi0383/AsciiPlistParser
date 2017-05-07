@@ -24,8 +24,7 @@ public class Reader {
     private func _parse() -> Any {
         eatBeginEndAnnotation()
         eatWhiteSpaceAndNewLine()
-        let prefix = String(iterator.prefix(2))
-        let type = scanner.scan(string: prefix)
+        let type = scanner.scan(iterator: iterator)
         switch type {
         case .object:
             return getObject()!
@@ -79,7 +78,7 @@ public class Reader {
                 eatBeginEndAnnotation()
                 eatWhiteSpaceAndNewLine()
                 eatBeginEndAnnotation()
-                if scanner.scan(string: String(iterator.prefix(2))) == .string {
+                if scanner.scan(iterator: iterator) == .string {
                     keyref = getKeyRef()
                 }
             case "=" where keyref != nil:
@@ -105,7 +104,7 @@ public class Reader {
                 if String(iterator.prefix(2)) == "" {
                     return result
                 }
-                if scanner.scan(string: String(iterator.prefix(2))) == .string {
+                if scanner.scan(iterator: iterator) == .string {
                     keyref = getKeyRef()
                 }
             }
@@ -212,11 +211,7 @@ public class Reader {
     }
 
     private func eatBeginEndAnnotation() {
-        let prefix = String(iterator.prefix(4))
-        if prefix == "" {
-            return
-        }
-        guard scanner.scan(string: prefix) == .annotation else {
+        guard scanner.scan(iterator: iterator) == .annotation else {
             return
         }
         while let next = iterator.next() {

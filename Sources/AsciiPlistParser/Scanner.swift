@@ -5,7 +5,11 @@ enum Type {
 }
 
 class Scanner {
-    func scan(string: String) -> Type {
+    func scan(iterator: IndexingIterator<[Character]>) -> Type {
+        let string = String(iterator.prefix(2))
+        if string == "" {
+            return .unknown
+        }
         let characters = string.characters.map { $0 }
         for (i, c) in characters.enumerated() {
             switch c {
