@@ -44,14 +44,15 @@ public class Reader {
             switch next {
             case "(":
                 eatWhiteSpaceAndNewLine()
-                if String(iterator.prefix(1)) == ")" {
+                if String(iterator.prefix(2)) == ");" {
+                    eat(1)
                     return result
                 }
                 result.value.append(getStringValue()!)
             case ",":
                 eatWhiteSpaceAndNewLine()
                 if String(iterator.prefix(2)) == ");" {
-                    eat(2)
+                    eat(1)
                     return result
                 }
                 result.value.append(getStringValue()!)
@@ -77,7 +78,7 @@ public class Reader {
                 eatWhiteSpaceAndNewLine()
                 if String(iterator.prefix(2)) == "};" {
                     eat(1)
-                    return [:]
+                    return result
                 }
                 keyref = getKeyRef()
             case ";" where keyref == nil:
@@ -90,35 +91,33 @@ public class Reader {
                 }
             case "=" where keyref != nil:
                 eatWhiteSpaceAndNewLine()
-                result[keyref] = _parse()
+                let value = _parse()
+                result[keyref] = value
+                assert(String(iterator.prefix(1)) == ";")
+                eat(1)
                 keyref = nil
             case "}":
                 switch String(iterator.prefix(1)) {
-                    case ";":
-                        return result
-                    default:
-                        break
-                }
-            case "/":
-                if String(iterator.prefix(1)) == "*" {
-
+                case ";":
+                    return result
+                default:
+                    break
                 }
             default:
                 eatWhiteSpaceAndNewLine()
                 eatBeginEndAnnotation()
                 eatWhiteSpaceAndNewLine()
                 eatBeginEndAnnotation()
+
+                if String(iterator.prefix(2)) == "" {
+                    return result
+                }
                 if scanner.scan(string: String(iterator.prefix(2))) == .string {
                     keyref = getKeyRef()
                 }
-                break
             }
         }
         return result
-    }
-
-    private func getKeyRef() -> KeyRef? {
-        return getStringValue()
     }
 
     private func getAnnotation() -> String? {
@@ -145,14 +144,58 @@ public class Reader {
         return nil
     }
 
-    private func getStringValue() -> StringValue? {
-        guard let string = getBefore([",", ";", " "]) else {
+    private func getKeyRef() -> KeyRef? {
+        if String(iterator.prefix(1)) == "\"" {
+            return getQuotedStringValue()
+        }
+        guard let value = getBefore([" "]) else {
             return nil
         }
-        return StringValue(value: string, annotation: getAnnotation())
+        return KeyRef(value: value, annotation: getAnnotation())
+    }
+
+    private func getQuotedStringValue() -> StringValue? {
+        guard String(iterator.prefix(1)) == "\"" else {
+            return nil
+        }
+        eat(1)
+        guard let string = getBefore(["\""]) else {
+            return nil
+        }
+        eat(1)
+        eatWhiteSpaceAndNewLine()
+        return StringValue(value: "\"\(string)\"", annotation: getAnnotation())
+    }
+
+    private func getStringValue() -> StringValue? {
+        if String(iterator.prefix(1)) == "\"" {
+            return getQuotedStringValue()
+        }
+        guard let string = getBefore([",", ";"]) else {
+            return nil
+        }
+        if string.contains("/*") {
+            let components = string.components(separatedBy: " /* ")
+            let value = components.first!
+            let last = components.last!
+            var it = last.characters.makeIterator()
+            var a = ""
+            while let next = it.next() {
+                a += String(next)
+                if String(it.prefix(3)) == " */" {
+                    break
+                }
+            }
+            return StringValue(value: value, annotation: a)
+        } else {
+            return StringValue(value: string, annotation: nil)
+        }
     }
 
     private func getBefore(_ strings: [String]) -> String? {
+        if strings.contains(String(iterator.prefix(1))) {
+            return ""
+        }
         var result = ""
         while let next = iterator.next() {
             result += String(next)
