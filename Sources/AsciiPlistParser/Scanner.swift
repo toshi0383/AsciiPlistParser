@@ -27,6 +27,6 @@ class Scanner {
                 return .unknown
             }
         }
-        fatalError("Unknown type!: \(string)")
+        return .unknown
     }
 }

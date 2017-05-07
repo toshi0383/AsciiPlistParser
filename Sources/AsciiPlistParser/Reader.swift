@@ -15,25 +15,25 @@ public class Reader {
                 _ = iterator.next()
             }
         }
-        self.object = _parse() as! Object
+        self.object = try _parse() as! Object
     }
 
     private let path: String
     private var iterator: IndexingIterator<[Character]>!
     private let scanner = Scanner()
-    private func _parse() -> Any {
+    private func _parse() throws -> Any {
         eatBeginEndAnnotation()
         eatWhiteSpaceAndNewLine()
         let type = scanner.scan(iterator: iterator)
         switch type {
         case .object:
-            return getObject()!
+            return try getObject()!
         case .array:
             return getArray()!
         case .string:
             return getStringValue()!
         default:
-            fatalError()
+            throw AsciiPlistParserError.parseFailed
         }
     }
 
@@ -49,14 +49,14 @@ public class Reader {
                 }
                 result.value.append(getStringValue()!)
             default:
-                fatalError()
+                assertionFailure()
             }
             eatWhiteSpaceAndNewLine()
         }
         return nil
     }
 
-    private func getObject() -> Object? {
+    private func getObject() throws -> Object? {
         let result: Object = [:]
         var keyref: KeyRef!
         while let next = iterator.next() {
@@ -83,7 +83,7 @@ public class Reader {
                 }
             case "=" where keyref != nil:
                 eatWhiteSpaceAndNewLine()
-                let value = _parse()
+                let value = try _parse()
                 result[keyref] = value
                 assert(String(iterator.prefix(1)) == ";")
                 eat(1)
@@ -225,7 +225,7 @@ public class Reader {
                 continue
             }
         }
-        fatalError()
+        assertionFailure()
     }
 
 }
