@@ -9,7 +9,7 @@ class ReaderTests: XCTestCase {
 #else
         let path = pathForFixture(fileName: "Xcode/8.3.2/SingleViewApplication/SingleViewApplication.xcodeproj/project.pbxproj")
 #endif
-        let parser = try! Reader(path: path)
+        let parser = Reader(path: path)
         try! parser.parse()
         let object = parser.object
 
@@ -33,7 +33,7 @@ class ReaderTests: XCTestCase {
 
     func testModification() {
         let path = pathForFixture(fileName: "Behavior/unsorted.fixture")
-        let parser = try! Reader(path: path)
+        let parser = Reader(path: path)
         try! parser.parse()
         let object = parser.object
         // Update object

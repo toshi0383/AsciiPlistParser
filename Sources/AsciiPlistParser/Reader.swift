@@ -1,17 +1,14 @@
 import Foundation
 
 public class Reader {
-    private let path: String
     public var object: Object = [:]
-    private var iterator: IndexingIterator<[Character]>!
-    private let scanner = Scanner()
-    public init(path: String) throws {
+    public init(path: String) {
         self.path = path
     }
     public func parse() throws  {
         let url = URL(fileURLWithPath: path)
         let data = try Data(contentsOf: url)
-        let characters = String(data: data, encoding: String.Encoding.utf8)!.characters.map { $0 }
+        let characters = String(data: data, encoding: .utf8)!.characters.map { $0 }
         iterator = characters.makeIterator()
         if String(iterator.prefix(Const.header.characters.count)) == Const.header {
             for _ in (0..<Const.header.characters.count) {
@@ -21,6 +18,9 @@ public class Reader {
         self.object = _parse() as! Object
     }
 
+    private let path: String
+    private var iterator: IndexingIterator<[Character]>!
+    private let scanner = Scanner()
     private func _parse() -> Any {
         eatBeginEndAnnotation()
         eatWhiteSpaceAndNewLine()

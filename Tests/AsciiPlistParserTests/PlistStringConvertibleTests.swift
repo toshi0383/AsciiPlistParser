@@ -5,7 +5,7 @@ import Foundation
 
 class PlistStringConvertibleTests: XCTestCase {
     func testSorted() {
-        let parser = try! Reader(path: pathForFixture(fileName: "Behavior/unsorted.fixture"))
+        let parser = Reader(path: pathForFixture(fileName: "Behavior/unsorted.fixture"))
         try! parser.parse()
         let objects = parser.object
         let url = URL(fileURLWithPath: pathForFixture(fileName: "Behavior/sorted.fixture"))
