@@ -30,13 +30,6 @@ public func == (lhs: ArrayValue, rhs: ArrayValue) -> Bool {
     guard lhs.value == rhs.value else { return false }
     return true
 }
-// MARK: - Object AutoEquatable
-extension Object: Equatable {} 
-public func == (lhs: Object, rhs: Object) -> Bool {
-    guard lhs.keyrefs == rhs.keyrefs else { return false }
-    guard lhs.dict == rhs.dict else { return false }
-    return true
-}
 // MARK: - StringValue AutoEquatable
 extension StringValue: Equatable {} 
 public func == (lhs: StringValue, rhs: StringValue) -> Bool {

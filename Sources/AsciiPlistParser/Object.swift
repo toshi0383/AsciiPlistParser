@@ -125,4 +125,40 @@ extension Object {
 }
 
 // MARK: AutoEquatable
-extension Object: AutoEquatable { }
+extension Object: Equatable {}
+public func == (lhs: Object, rhs: Object) -> Bool {
+    guard lhs.keyrefs == rhs.keyrefs else { return false }
+    guard equals(lhs.dict, rhs.dict) else { return false }
+    return true
+}
+func equals(_ lhs: [KeyRef: Any], _ rhs: [KeyRef: Any]) -> Bool {
+    guard lhs.count == rhs.count else { return false }
+    for (kl, ol) in lhs {
+        guard let or = rhs[kl] else {
+            return false
+        }
+        guard equals(ol, or) else {
+            return false
+        }
+    }
+    return true
+}
+func equals(_ lhs: Any, _ rhs: Any) -> Bool {
+    switch lhs {
+    case let l as Object:
+        if let r = rhs as? Object {
+            return l == r
+        }
+    case let l as StringValue:
+        if let r = rhs as? StringValue {
+            return l == r
+        }
+    case let l as ArrayValue:
+        if let r = rhs as? ArrayValue {
+            return l == r
+        }
+    default:
+        break
+    }
+    return false
+}
