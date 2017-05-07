@@ -34,15 +34,17 @@ public final class Object {
             return self.dict[keyref]
         }
         set(newValue) {
-            if newValue == nil {
-                self.dict.removeValue(forKey: keyref)
-                self.keyrefs = self.keyrefs.filter { $0 != keyref }
-            } else {
+            if let newValue = newValue {
                 if self[keyref] == nil {
                     self.keyrefs.append(keyref)
-                    self.dict[keyref] = newValue!
+                    self.dict[keyref] = newValue
                 } else {
-                    self.dict[keyref]! = newValue!
+                    self.dict[keyref] = newValue
+                }
+            } else {
+                if let idx = self.keyrefs.index(of: keyref) {
+                    self.keyrefs.remove(at: idx)
+                    self.dict.removeValue(forKey: keyref)
                 }
             }
         }
