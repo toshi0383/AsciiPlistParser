@@ -27,22 +27,6 @@ public final class Object {
             let keyref = keyrefs.filter(samekey)[0]
             return self.dict[keyref]
         }
-        set(newValue) {
-            if let keyref = keyRef(for: key) {
-                if newValue == nil {
-                    self.dict.removeValue(forKey: keyref)
-                    self.keyrefs = self.keyrefs.filter { $0 != keyref }
-                } else {
-                    self.dict[keyref] = newValue!
-                }
-            } else {
-                let keyref = KeyRef(value: key, annotation: nil)
-                if let v = newValue {
-                    self.keyrefs.append(keyref)
-                    self.dict[keyref] = v
-                }
-            }
-        }
     }
 
     public subscript(keyref: KeyRef) -> Any? {
