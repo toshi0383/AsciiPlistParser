@@ -3,6 +3,12 @@
 
 
 import XCTest
+extension ObjectTests {
+  static var allTests: [(String, (ObjectTests) -> () throws -> Void)] = [
+    ("testObjectEquatableAgainstStringValue", testObjectEquatableAgainstStringValue),
+    ("testObjectEquatableAgainstOtherTypes", testObjectEquatableAgainstOtherTypes),
+  ]
+}
 extension PlistStringConvertibleTests {
   static var allTests: [(String, (PlistStringConvertibleTests) -> () throws -> Void)] = [
     ("testSorted", testSorted),
@@ -30,6 +36,12 @@ extension SingleViewApplicationUITests {
     ("testExample", testExample),
   ]
 }
+extension ValuesTests {
+  static var allTests: [(String, (ValuesTests) -> () throws -> Void)] = [
+    ("testStringValueCanBeExpressedByStringLiteral", testStringValueCanBeExpressedByStringLiteral),
+    ("testArrayValueCanBeExpressedByArrayLiteral", testArrayValueCanBeExpressedByArrayLiteral),
+  ]
+}
 extension libraryTests {
   static var allTests: [(String, (libraryTests) -> () throws -> Void)] = [
     ("testExample", testExample),
@@ -37,10 +49,12 @@ extension libraryTests {
 }
 
 XCTMain([
+  testCase(ObjectTests.allTests),
   testCase(PlistStringConvertibleTests.allTests),
   testCase(ReaderTests.allTests),
   testCase(SingleViewApplicationTests.allTests),
   testCase(SingleViewApplicationUITests.allTests),
+  testCase(ValuesTests.allTests),
   testCase(libraryTests.allTests),
 ])
 
