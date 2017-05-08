@@ -105,6 +105,12 @@ extension Object {
     public func stringArray(for key: String) -> [String]? {
         return (self[key] as? ArrayValue)?.value.map { $0.value }
     }
+    public func stringValue(for key: String) -> StringValue? {
+        return self[key] as? StringValue
+    }
+    public func arrayValue(for key: String) -> ArrayValue? {
+        return self[key] as? ArrayValue
+    }
     public func object(for key: String) -> Object? {
         return self[key] as? Object
     }
