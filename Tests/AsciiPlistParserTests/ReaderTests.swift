@@ -46,5 +46,8 @@ class ReaderTests: XCTestCase {
         let obj31 = obj["OBJ_31"] as! Object
         obj31["newObject"] = StringValue(value: "hello", annotation: nil)
         XCTAssert(object.string().contains("newObject = hello") == true)
+        let idname = "newObject"
+        obj31[idname] = StringValue(value: "yellow", annotation: nil)
+        XCTAssert(object.string().contains("newObject = yellow") == true)
     }
 }

@@ -17,6 +17,9 @@ public final class Object {
     }
 
     public subscript(key: String) -> Any? {
+        set(newValue) {
+            self[KeyRef(value: key, annotation: nil)] = newValue
+        }
         get {
             func samekey(_ element: KeyRef) -> Bool {
                 return element.value == key
