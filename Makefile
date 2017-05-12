@@ -2,7 +2,7 @@
 SOURCERY = ./.build/debug/sourcery
 
 bootstrap:
-	SWIFTPM_DEVELOPMENT_AsciiPlistParser=YES swift build
+	SWIFTPM_DEVELOPMENT=YES swift build
 	swift package generate-xcodeproj
 	# todo: Add fixtures to xcodeproj
 start-daemons:
