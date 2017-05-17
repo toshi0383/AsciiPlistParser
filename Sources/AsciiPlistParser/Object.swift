@@ -38,6 +38,9 @@ public final class Object {
         }
         set(newValue) {
             if let newValue = newValue {
+                guard validateValueType(newValue) else {
+                    assertionFailure(); return
+                }
                 if self[keyref] == nil {
                     self.keyrefs.append(keyref)
                     self.dict[keyref] = newValue
@@ -116,6 +119,18 @@ extension Object {
     }
     public func object(for key: String) -> Object? {
         return self[key] as? Object
+    }
+}
+
+// MARK: Value Validation
+extension Object {
+    func validateValueType(_ value: Any) -> Bool {
+        switch value {
+        case is StringValue: return true
+        case is ArrayValue: return true
+        case is Object: return true
+        default: return false
+        }
     }
 }
 

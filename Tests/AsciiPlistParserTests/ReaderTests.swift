@@ -38,7 +38,7 @@ class ReaderTests: XCTestCase {
         let object = parser.object
         // Update object
         XCTAssert(object.string().contains("archiveVersion = 2") == false)
-        object["archiveVersion"] = "2"
+        object["archiveVersion"] = StringValue(value: "2", annotation: nil)
         XCTAssert(object.string().contains("archiveVersion = 2") == true)
         // Update nested object
         XCTAssert(object.string().contains("newObject = hello") == false)
