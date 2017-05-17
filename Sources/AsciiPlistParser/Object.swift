@@ -41,11 +41,19 @@ public final class Object {
                 guard validateValueType(newValue) else {
                     assertionFailure(); return
                 }
+                let v: Any
+                if let newValue = newValue as? String {
+                    v = StringValue(value: newValue, annotation: nil)
+                } else if let newValue = newValue as? [String] {
+                    v = ArrayValue(value: newValue.map {StringValue(value: $0, annotation: nil)})
+                } else {
+                    v = newValue
+                }
                 if self[keyref] == nil {
                     self.keyrefs.append(keyref)
-                    self.dict[keyref] = newValue
+                    self.dict[keyref] = v
                 } else {
-                    self.dict[keyref] = newValue
+                    self.dict[keyref] = v
                 }
             } else {
                 if let idx = self.keyrefs.index(of: keyref) {
@@ -129,6 +137,8 @@ extension Object {
         case is StringValue: return true
         case is ArrayValue: return true
         case is Object: return true
+        case is String: return true
+        case is [String]: return true
         default: return false
         }
     }
