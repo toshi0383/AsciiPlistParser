@@ -130,6 +130,16 @@ extension Object {
     }
 }
 
+extension Object {
+    public func keyref<T: Equatable>(for v: T) -> KeyRef? {
+        let keyrefs = self.flatMap { ($1 as? T) == v ? $0 : nil }
+        return keyrefs.first
+    }
+    public func key<T: Equatable>(for v: T) -> String? {
+        return keyref(for: v)?.value
+    }
+}
+
 // MARK: Value Validation
 extension Object {
     func validateValueType(_ value: Any) -> Bool {
