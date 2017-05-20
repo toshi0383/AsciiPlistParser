@@ -46,6 +46,8 @@ public final class Object {
                     v = StringValue(value: newValue, annotation: nil)
                 } else if let newValue = newValue as? [String] {
                     v = ArrayValue(value: newValue.map {StringValue(value: $0, annotation: nil)})
+                } else if let newValue = newValue as? [String: Any] {
+                    v = Object(dictionary: newValue)
                 } else {
                     v = newValue
                 }
@@ -103,6 +105,12 @@ extension Object {
 
 // MARK: ExpressibleByDictionaryLiteral
 extension Object: ExpressibleByDictionaryLiteral {
+    public convenience init(dictionary elements: [String: Any]) {
+        self.init()
+        for (string, value) in elements {
+            self[KeyRef(value: string, annotation: nil)] = value
+        }
+    }
     public convenience init(dictionaryLiteral elements: (KeyRef, Any)...) {
         self.init()
         for (keyref, value) in elements {
@@ -130,6 +138,7 @@ extension Object {
     }
 }
 
+// MARK: key (ID) retrieval
 extension Object {
     public func keyref<T: Equatable>(for v: T) -> KeyRef? {
         let keyrefs = self.flatMap { ($1 as? T) == v ? $0 : nil }
@@ -137,6 +146,26 @@ extension Object {
     }
     public func key<T: Equatable>(for v: T) -> String? {
         return keyref(for: v)?.value
+    }
+}
+
+// MARK: Type Conversion
+extension Object {
+    public var dictionary: [String: Any]  {
+        var r = [String: Any]()
+        for (keyref, value) in self {
+            switch value {
+            case let v as StringValue:
+                r[keyref.value] = v.value
+            case let v as ArrayValue:
+                r[keyref.value] = v.value
+            case let v as Object:
+                r[keyref.value] = v.dictionary
+            default:
+                fatalError("Failed to convert Object to [String: Any]")
+            }
+        }
+        return r
     }
 }
 
@@ -149,6 +178,7 @@ extension Object {
         case is Object: return true
         case is String: return true
         case is [String]: return true
+        case is [String: Any]: return true
         default: return false
         }
     }
