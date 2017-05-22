@@ -1,10 +1,15 @@
-.PHONY = start-daemons
-SOURCERY = ./.build/debug/sourcery
+.PHONY = update bootstrap sourcery
+SOURCERY ?= ./.build/debug/sourcery
+PARAM = SWIFTPM_DEVELOPMENT=YES
+
+update:
+	$(PARAM) swift package update
 
 bootstrap:
-	SWIFTPM_DEVELOPMENT=YES swift build
-	swift package generate-xcodeproj
+	$(PARAM) swift build
+	$(PARAM) swift package generate-xcodeproj
 	# todo: Add fixtures to xcodeproj
-start-daemons:
+
+sourcery:
 	$(SOURCERY) --templates Resources/SourceryTemplates/AutoEquatables.stencil --sources Sources/AsciiPlistParser/ --output Sources/AsciiPlistParser/Sourcery.out.swift
-	$(SOURCERY) --templates Resources/SourceryTemplates/LinuxMain.stencil --sources Tests/AsciiPlistParserTests/ --output Tests/LinuxMain.swift --watch
+	$(SOURCERY) --templates Resources/SourceryTemplates/LinuxMain.stencil --sources Tests/AsciiPlistParserTests/ --output Tests/LinuxMain.swift
