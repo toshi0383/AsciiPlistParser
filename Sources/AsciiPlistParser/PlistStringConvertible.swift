@@ -114,12 +114,22 @@ extension Object: PlistStringConvertible {
 
 extension StringValue: PlistStringConvertible {
     func string(_ depth: Int, isNewLineNeeded: Bool = true) -> String {
-        var result = "\(value)"
-        if let a = annotation {
-            result += " "
-            result += _annotation(a)
+        switch self {
+        case .raw(let value, let annotation):
+            var result = value
+            if let a = annotation {
+                result += " "
+                result += _annotation(a)
+            }
+            return result
+        case .quoted(let value, let annotation):
+            var result = "\"\(value)\""
+            if let a = annotation {
+                result += " "
+                result += _annotation(a)
+            }
+            return result
         }
-        return result
     }
 }
 
