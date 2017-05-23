@@ -21,17 +21,17 @@ extension Object: PlistStringConvertible {
             }
             guard let fstobj = fst.1 as? Object,
                 let sndobj = snd.1 as? Object else {
-                    return fst.0.nonQuotedValue < snd.0.nonQuotedValue
+                    return fst.0 < snd.0
             }
             if let isa1 = fstobj["isa"] as? StringValue,
                 let isa2 = sndobj["isa"] as? StringValue {
                 if isa1.value == isa2.value {
-                    return fst.0.nonQuotedValue < snd.0.nonQuotedValue
+                    return fst.0 < snd.0
                 } else {
                     return isa1.value < isa2.value
                 }
             }
-            if fst.0.nonQuotedValue > snd.0.nonQuotedValue {
+            if fst.0 > snd.0 {
                 return false
             }
             return true

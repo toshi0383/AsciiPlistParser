@@ -156,7 +156,7 @@ public class Reader {
         }
         eat(1)
         eatWhiteSpaceAndNewLine()
-        return StringValue(value: "\"\(string)\"", annotation: getAnnotation())
+        return .quoted(value: string, annotation: getAnnotation())
     }
 
     private func getStringValue() -> StringValue? {
@@ -178,9 +178,9 @@ public class Reader {
                     break
                 }
             }
-            return StringValue(value: value, annotation: a)
+            return .raw(value: value, annotation: a)
         } else {
-            return StringValue(value: string, annotation: nil)
+            return .raw(value: string, annotation: nil)
         }
     }
 

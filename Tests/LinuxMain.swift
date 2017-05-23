@@ -6,7 +6,7 @@ import XCTest
 extension ObjectTests {
   static var allTests: [(String, (ObjectTests) -> () throws -> Void)] = [
     ("testObjectEquatableAgainstStringValue", testObjectEquatableAgainstStringValue),
-    ("testObjectEquatableAgainstOtherTypes", testObjectEquatableAgainstOtherTypes),
+    ("testDictionary", testDictionary),
   ]
 }
 extension PlistStringConvertibleTests {
