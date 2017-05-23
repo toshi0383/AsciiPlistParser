@@ -13,7 +13,7 @@ extension PlistStringConvertibleTests {
   static var allTests: [(String, (PlistStringConvertibleTests) -> () throws -> Void)] = [
     ("testSorted", testSorted),
     ("testSorted002", testSorted002),
-    ("testStringStringValue", testStringStringValue),
+    ("testStringValue", testStringValue),
     ("testArrayStringValue", testArrayStringValue),
     ("testObject", testObject),
     ("testPbxprojCompatibility", testPbxprojCompatibility),

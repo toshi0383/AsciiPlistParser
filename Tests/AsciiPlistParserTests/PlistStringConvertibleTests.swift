@@ -27,13 +27,13 @@ class PlistStringConvertibleTests: XCTestCase {
             "B1231",
             "B1233",
             "B1234",
-            "\"C1233\"",
+            "C1233",
             "A12345",
             "A12346",
         ])
     }
 
-    func testStringStringValue() {
+    func testStringValue() {
         let value = StringValue(value: "Hello", annotation: "Hello.swift in Sources")
         let expected = "Hello /* Hello.swift in Sources */"
         XCTAssertEqual(value.string(0), expected)
