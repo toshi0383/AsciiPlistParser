@@ -30,6 +30,12 @@ public enum StringValue {
             self = .raw(value: value, annotation: annotation)
         }
     }
+    public func update(value: String) -> StringValue {
+        return StringValue(value: value, annotation: self.annotation)
+    }
+    public func update(annotation: String) -> StringValue {
+        return StringValue(value: self.value, annotation: annotation)
+    }
 }
 
 public final class ArrayValue {
