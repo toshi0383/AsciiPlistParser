@@ -27,17 +27,23 @@ class PlistStringConvertibleTests: XCTestCase {
             "B1231",
             "B1233",
             "B1234",
-            "\"C1233\"",
+            "C1233",
             "A12345",
             "A12346",
         ])
     }
 
-    func testStringStringValue() {
-        let value = StringValue(value: "Hello", annotation: "Hello.swift in Sources")
+    func testStringValue() {
+        let value: StringValue = .raw(value: "Hello", annotation: "Hello.swift in Sources")
         let expected = "Hello /* Hello.swift in Sources */"
         XCTAssertEqual(value.string(0), expected)
         XCTAssertEqual(StringValue(value: "Hello", annotation: nil).string(0), "Hello")
+    }
+
+    func testQuotedStringValue() {
+        let value: StringValue = .quoted(value: "Hello", annotation: "Hello.swift in Sources")
+        let expected = "\"Hello\" /* Hello.swift in Sources */"
+        XCTAssertEqual(value.string(0), expected)
     }
 
     func testArrayStringValue() {

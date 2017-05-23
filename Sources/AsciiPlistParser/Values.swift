@@ -7,23 +7,28 @@ enum Const {
 
 // MARK: Type Definition
 public typealias KeyRef = StringValue
-
-public final class StringValue {
-    public var value: String
-    public var annotation: String?
-    public init(value: String, annotation: String?) {
-        self.value = value
-        self.annotation = annotation
-    }
-    public var nonQuotedValue: String {
-        var chars: [Character] = []
-        for (i, c) in value.characters.enumerated() {
-            if (i == 0 || i == value.characters.count - 1) && c == "\"" {
-            } else {
-                chars.append(c)
-            }
+public enum StringValue {
+    case quoted(value: String, annotation: String?)
+    case raw(value: String, annotation: String?)
+    public var value: String {
+        switch self {
+        case .quoted(let value, _): return value
+        case .raw(let value, _): return value
         }
-        return String(chars)
+    }
+    public var annotation: String? {
+        switch self {
+        case .quoted(_, let annotation): return annotation
+        case .raw(_, let annotation): return annotation
+        }
+    }
+    public init(value: String, annotation: String? = nil) {
+        let characters = value.characters
+        if characters.count > 1 && characters.first == "\"" && characters.last == "\"" {
+            self = .quoted(value: String(characters.dropFirst().dropLast()), annotation: annotation)
+        } else {
+            self = .raw(value: value, annotation: annotation)
+        }
     }
 }
 
@@ -60,15 +65,15 @@ extension ArrayValue: ExpressibleByArrayLiteral {
 
 // MARK: ExpressibleByStringLiteral
 extension StringValue: ExpressibleByStringLiteral {
-    public convenience init(stringLiteral value: String) {
+    public init(stringLiteral value: String) {
         self.init(value: value, annotation: nil)
     }
 
-    public convenience init(extendedGraphemeClusterLiteral value: String) {
+    public init(extendedGraphemeClusterLiteral value: String) {
         self.init(value: value, annotation: nil)
     }
 
-    public convenience init(unicodeScalarLiteral value: String) {
+    public init(unicodeScalarLiteral value: String) {
         self.init(value: value, annotation: nil)
     }
 }
@@ -84,3 +89,9 @@ extension KeyRef: Hashable {
 protocol AutoEquatable { }
 extension StringValue: AutoEquatable { }
 extension ArrayValue: AutoEquatable { }
+
+// MARK: Comparable
+extension StringValue: Comparable { }
+public func < (lhs: StringValue, rhs: StringValue) -> Bool {
+    return lhs.value < rhs.value
+}

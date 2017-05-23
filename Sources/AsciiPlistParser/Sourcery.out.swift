@@ -30,14 +30,22 @@ public func == (lhs: ArrayValue, rhs: ArrayValue) -> Bool {
     guard lhs.value == rhs.value else { return false }
     return true
 }
-// MARK: - StringValue AutoEquatable
-extension StringValue: Equatable {} 
-public func == (lhs: StringValue, rhs: StringValue) -> Bool {
-    guard lhs.value == rhs.value else { return false }
-    guard compareOptionals(lhs: lhs.annotation, rhs: rhs.annotation, compare: ==) else { return false }
-    return true
-}
 
 // MARK: - AutoEquatable for Enums
+// MARK: - StringValue AutoEquatable
+extension StringValue: Equatable {}
+public func == (lhs: StringValue, rhs: StringValue) -> Bool {
+    switch (lhs, rhs) {
+    case (.quoted(let lhs), .quoted(let rhs)): 
+        if lhs.value != rhs.value { return false }
+        if lhs.annotation != rhs.annotation { return false }
+        return true
+    case (.raw(let lhs), .raw(let rhs)): 
+        if lhs.value != rhs.value { return false }
+        if lhs.annotation != rhs.annotation { return false }
+        return true
+    default: return false
+    }
+}
 
 // MARK: -
