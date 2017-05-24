@@ -21,7 +21,7 @@ class Scanner {
                 return .array
             case "{":
                 return .object
-            case ("a"..."z"), ("A"..."Z"), ("0"..."9"), "_", "\"":
+            case ("a"..."z"), ("A"..."Z"), ("0"..."9"), "_", "\"", ".":
                 return .string
             default:
                 return .unknown
