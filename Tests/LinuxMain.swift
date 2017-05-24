@@ -3,6 +3,11 @@
 
 
 import XCTest
+extension IntegrationTests {
+  static var allTests: [(String, (IntegrationTests) -> () throws -> Void)] = [
+    ("testSuccessfullyParseFixtures", testSuccessfullyParseFixtures),
+  ]
+}
 extension ObjectTests {
   static var allTests: [(String, (ObjectTests) -> () throws -> Void)] = [
     ("testObjectEquatableAgainstStringValue", testObjectEquatableAgainstStringValue),
@@ -14,6 +19,7 @@ extension PlistStringConvertibleTests {
     ("testSorted", testSorted),
     ("testSorted002", testSorted002),
     ("testStringValue", testStringValue),
+    ("testQuotedStringValue", testQuotedStringValue),
     ("testArrayStringValue", testArrayStringValue),
     ("testObject", testObject),
     ("testPbxprojCompatibility", testPbxprojCompatibility),
@@ -49,6 +55,7 @@ extension libraryTests {
 }
 
 XCTMain([
+  testCase(IntegrationTests.allTests),
   testCase(ObjectTests.allTests),
   testCase(PlistStringConvertibleTests.allTests),
   testCase(ReaderTests.allTests),

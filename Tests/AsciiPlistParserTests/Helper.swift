@@ -1,5 +1,10 @@
 import Foundation
+import PathKit
 import AsciiPlistParser
+
+enum Const {
+    fileprivate static let fixturesPath = "Tests/AsciiPlistParserTests/Fixtures"
+}
 
 func pathForFixture(fileName: String) -> String {
     #if Xcode
@@ -17,6 +22,12 @@ func buildFile(with keyrefValue: String) -> (KeyRef, Any) {
             (KeyRef(value: "isa", annotation: nil), StringValue(value: "PBXBuildFile", annotation: nil))
         )
     )
+}
+
+func _xcodeprojFixturePaths() -> [String] {
+    return try! Path(Const.fixturesPath).recursiveChildren()
+        .filter { $0.lastComponent.hasSuffix(".pbxproj") }
+        .map { $0.string }
 }
 
 func fileRef(with keyrefValue: String) -> (KeyRef, Any) {
