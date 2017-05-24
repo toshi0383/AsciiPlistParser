@@ -1,11 +1,3 @@
-//
-//  IntegrationTests.swift
-//  AsciiPlistParser
-//
-//  Created by Toshihiro suzuki on 2017/05/24.
-//
-//
-
 import XCTest
 @testable import AsciiPlistParser
 
