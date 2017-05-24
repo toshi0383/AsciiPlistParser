@@ -9,7 +9,7 @@ class IntegrationTests: XCTestCase {
             let parser = Reader(path: path)
             do {
                 try parser.parse()
-                let object = parser.object
+                _ = parser.object
             } catch {
                 XCTFail("Parse failed: \(path)")
             }

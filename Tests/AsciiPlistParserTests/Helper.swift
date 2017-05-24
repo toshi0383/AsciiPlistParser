@@ -3,7 +3,7 @@ import PathKit
 import AsciiPlistParser
 
 enum Const {
-    fileprivate static let fixturesPath = "Tests/AsciiPlistParserTests/Fixtures"
+    fileprivate static let fixturesPath = "Resources/Fixtures"
 }
 
 func pathForFixture(fileName: String) -> String {
@@ -11,7 +11,7 @@ func pathForFixture(fileName: String) -> String {
         let name = fileName.components(separatedBy: "/").last!
         return Bundle(for: PlistStringConvertibleTests.self).path(forResource: name, ofType: nil)!
     #else
-        return "Tests/AsciiPlistParserTests/Fixtures/\(fileName)"
+        return "\(Const.fixturesPath)/\(fileName)"
     #endif
 }
 

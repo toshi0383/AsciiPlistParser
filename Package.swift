@@ -20,5 +20,5 @@ let package = Package(
         }
         return deps
     }(),
-    exclude: ["Resources/SourceryTemplates", "Tests/AsciiPlistParserTests/Fixtures"]
+    exclude: ["Resources/SourceryTemplates", "Resources/Fixtures"]
 )
