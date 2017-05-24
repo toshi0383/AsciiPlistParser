@@ -25,9 +25,13 @@ func buildFile(with keyrefValue: String) -> (KeyRef, Any) {
 }
 
 func _xcodeprojFixturePaths() -> [String] {
-    return try! Path(Const.fixturesPath).recursiveChildren()
-        .filter { $0.lastComponent.hasSuffix(".pbxproj") }
-        .map { $0.string }
+    #if Xcode
+        return [pathForFixture(fileName: "test.pbxproj")]
+    #else
+        return try! Path(Const.fixturesPath).recursiveChildren()
+            .filter { $0.lastComponent.hasSuffix(".pbxproj") }
+            .map { $0.string }
+    #endif
 }
 
 func fileRef(with keyrefValue: String) -> (KeyRef, Any) {

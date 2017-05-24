@@ -150,11 +150,11 @@ public class Reader {
         guard String(iterator.prefix(1)) == "\"" else {
             return nil
         }
-        eat(1)
+        eat(1) // "
         guard let string = getBefore(["\""]) else {
             return nil
         }
-        eat(1)
+        eat(1) // "
         eatWhiteSpaceAndNewLine()
         return .quoted(value: string, annotation: getAnnotation())
     }
@@ -189,10 +189,16 @@ public class Reader {
             return ""
         }
         var result = ""
+        var isEscapeNext = String(iterator.prefix(1)) == "\\"
         while let next = iterator.next() {
             result += String(next)
-            if strings.contains(String(iterator.prefix(1))) {
+            if isEscapeNext == false && strings.contains(String(iterator.prefix(1))) {
                 return result
+            }
+            if isEscapeNext == false && String(iterator.prefix(1)) == "\\" {
+                isEscapeNext = true
+            } else {
+                isEscapeNext = false
             }
         }
         return nil
